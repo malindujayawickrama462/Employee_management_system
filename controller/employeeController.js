@@ -21,7 +21,7 @@ export async function getEmployees(req,res) {
                 msg:"No employees"
             });
         }
-        res.status(200).json(employess)
+        res.status(200).json(employess)  
     }catch(err){
         res.status(500).json({
             msg:err.message
@@ -75,3 +75,4 @@ export async function deleteEmployee(req,res){
         });
     }
 };
+ 
