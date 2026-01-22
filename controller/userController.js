@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export async function RegisterUser(req,res) {
     try{
-        const{name,email,password} = req.body;
+        const{name,email,password,role} = req.body;
         if(!name || !email || !password){
             return res.status(400).json({
                 msg:"please add all fields"
@@ -21,13 +21,15 @@ export async function RegisterUser(req,res) {
         const user = await User.create({
             name,
             email,
-            password:hsashedPassword
+            password:hsashedPassword,
+            role:role || "employee"
         })
         if(user){
             res.status(201).json({
                 _id:user.id,
                 name:user.name,
-                email:user.email
+                email:user.email,
+                role:user.role
             })
         }else{
             res.status(400).json({
@@ -52,6 +54,7 @@ export async function loginUser(req,res) {
                 _id:user.id,
                 name:user.name,
                 email:user.email,
+                role:user.role,
                 token:genarateToken(user._id)
             })
         }else{

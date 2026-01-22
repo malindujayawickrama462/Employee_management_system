@@ -1,11 +1,12 @@
 import express from "express";
 import { getUser, loginUser, RegisterUser } from "../controller/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/authRole.js";
 
 const userRouter = express.Router();
 
 userRouter.post("/add",RegisterUser); 
 userRouter.post("/login",loginUser);
-userRouter.get("/get",protect,getUser);
+userRouter.get("/get",protect,authorizeRoles("admin","hr","employee"),getUser);
 
-export default userRouter;   
+export default userRouter;
