@@ -9,7 +9,7 @@ import payrollRouter from "./routes/payroll.js";
 const app = express();
 //DB connection
 connection();
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173" }));  
 app.use(express.json());
 
 app.get("/",(req,res)=>res.send("Hello world"));
