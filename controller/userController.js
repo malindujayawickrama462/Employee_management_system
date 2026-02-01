@@ -40,7 +40,7 @@ export async function RegisterUser(req,res) {
         res.status(400).json({
             msg:err.message
         });
-    }
+    } 
 };
 
 export async function loginUser(req,res) {
@@ -88,4 +88,4 @@ function genarateToken(id){
     return jwt.sign({id},"malindu123",{
         expiresIn:'30d',
     })
-} 
+}
