@@ -6,6 +6,8 @@ import EmployeeDashboard from './pages/EmployeeDashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import RoleBaseRoutes from './utils/RoleBaseRoutes';
 import Unauthorized from './pages/Unauthorized';
+import Profile from './pages/Profile';
+import Leaves from './pages/Leaves';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -30,6 +32,16 @@ function App() {
           <Route path="/employee-dashboard" element={
             <RoleBaseRoutes requiredRole={["admin", "employee"]}>
               <EmployeeDashboard />
+            </RoleBaseRoutes>
+          } />
+          <Route path="/profile" element={
+            <RoleBaseRoutes requiredRole={["admin", "employee"]}>
+              <Profile />
+            </RoleBaseRoutes>
+          } />
+          <Route path="/leaves" element={
+            <RoleBaseRoutes requiredRole={["admin", "employee"]}>
+              <Leaves />
             </RoleBaseRoutes>
           } />
         </Routes>
