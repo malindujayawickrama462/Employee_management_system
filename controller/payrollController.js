@@ -1,35 +1,35 @@
 import Employee from "../models/employee.js";
 import Payroll from "../models/payroll.js";
-import PDFDocument from "pdfkit"; 
+import PDFDocument from "pdfkit";
 
-export async function genaratePayroll(req,res){
-    try{
-        const{employeeID,month,year,baseSalary,allowances=0,deductions=0}=req.body;
-        if(!employeeID||!month||!year||!baseSalary){
+export async function genaratePayroll(req, res) {
+    try {
+        const { employeeID, month, year, baseSalary, allowances = 0, deductions = 0 } = req.body;
+        if (!employeeID || !month || !year || !baseSalary) {
             return res.status(400).json({
-                msg:"required all fields"
+                msg: "required all fields"
             });
         }
-        const employee = await Employee.findOne({ employeeID});
-        if(!employee){
+        const employee = await Employee.findOne({ employeeID });
+        if (!employee) {
             return res.status(400).json({
-                msg:"employee not found"  
+                msg: "employee not found"
             });
         }
-        const existingPayroll = await Payroll.findOne({employee:employee._id,month,year});
-        if(existingPayroll){
+        const existingPayroll = await Payroll.findOne({ employee: employee._id, month, year });
+        if (existingPayroll) {
             return res.status(400).json({
-                msg:"payroll already genarated for this month"
+                msg: "payroll already genarated for this month"
             });
         }
         const TAX_RATE = 0.2;
-        const grossSalary = baseSalary+allowances-deductions;
+        const grossSalary = baseSalary + allowances - deductions;
         const annualSalary = grossSalary * 12;
         const tax = annualSalary * TAX_RATE;
-        const netSalary = annualSalary-tax;
+        const netSalary = annualSalary - tax;
 
         const payroll = await Payroll.create({
-            employee:employee._id,
+            employee: employee._id,
             month,
             year,
             baseSalary,
@@ -40,76 +40,85 @@ export async function genaratePayroll(req,res){
             netSalary,
         });
         res.status(201).json({
-            msg:"payroll genarated successfully",
+            msg: "payroll genarated successfully",
             payroll
         })
-    }catch(err){
+    } catch (err) {
         res.status(500).json({
-            msg:err.message
+            msg: err.message
         });
     }
 };
 
-export async function getpayrollsByemployeeID(req,res){
-    try{
-        const{employeeID}=req.body;
-        if(!employeeID){
+export async function getPayrolls(req, res) {
+    try {
+        const payrolls = await Payroll.find().populate("employee", "departmentID name");
+        res.status(200).json({ success: true, payrolls });
+    } catch (err) {
+        res.status(500).json({ success: false, error: "get payrolls server error" });
+    }
+}
+
+export async function getpayrollsByemployeeID(req, res) {
+    try {
+        const { employeeID } = req.body;
+        if (!employeeID) {
             return res.status(400).json({
-                msg:"required employeeID"
+                msg: "required employeeID"
             });
         }
-        const employee = await Employee.findOne({employeeID});
-        if(!employee){
+        const employee = await Employee.findOne({ employeeID });
+        if (!employee) {
             return res.status(400).json({
-                msg:"employee not found"
+                msg: "employee not found"
             });
         }
-        const payrolls = await Payroll.find({employee:employee._id})
-        .sort({ year: -1, month: -1 });//latest payrolls first
-        if(!payrolls.length){
+        const payrolls = await Payroll.find({ employee: employee._id })
+            .sort({ year: -1, month: -1 });//latest payrolls first
+        if (!payrolls.length) {
             return res.status(400).json({
-                msg:"no records found"
+                msg: "no records found"
             });
         }
         res.status(201).json({
-            msg:"records get successfully",
+            msg: "records get successfully",
             payrolls
         });
 
-    }catch(err){
+    } catch (err) {
         res.status(500).json({
-            msg:err.message
+            msg: err.message
         });
     }
 };
 
-export async function getSingleSalarySlip(req,res){
-    try{
-        const{employeeID,year,month}=req.body;
-        if(!employeeID||!year||!month){
+export async function getSingleSalarySlip(req, res) {
+    try {
+        const { employeeID, year, month } = req.body;
+        if (!employeeID || !year || !month) {
             return res.status(400).json({
-                msg:"required all fields"
+                msg: "required all fields"
             });
         }
-        const employee = await Employee.findOne({employeeID});
-        if(!employee){
+        const employee = await Employee.findOne({ employeeID });
+        if (!employee) {
             return res.status(400).json({
-                msg:"employee not found"
+                msg: "employee not found"
             });
         }
-        const payroll = await Payroll.findOne({employee:employee._id,year:year,month:month});
-        if(!payroll){
+        const payroll = await Payroll.findOne({ employee: employee._id, year: year, month: month });
+        if (!payroll) {
             return res.status(400).json({
-                msg:"payroll not found"
+                msg: "payroll not found"
             });
         }
         res.status(201).json({
-            msg:"fetched payroll successfully",
+            msg: "fetched payroll successfully",
             payroll
         })
-    }catch(err){
+    } catch (err) {
         res.status(500).json({
-            msg:err.message
+            msg: err.message
         });
     }
 };
@@ -134,7 +143,7 @@ export async function generatePayslip(req, res) {
         doc.pipe(res);
 
         // ====== PDF Content ======
-        
+
         doc
             .fontSize(20)
             .text("Company Name", { align: "center" })
