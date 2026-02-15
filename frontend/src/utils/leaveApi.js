@@ -1,7 +1,20 @@
+/**
+ * leaveApi.js - Interface for Attendance and Absence Services
+ * 
+ * Specifically handles the submission, retrieval, and institutional
+ * approval flow for employee leave requests.
+ */
+
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/api/leave';
 
+/**
+ * Localized Axios Instance for Leave Services
+ * 
+ * Features a dedicated interceptor to ensure auth tokens are current 
+ * before any leave-related transaction.
+ */
 const api = axios.create({
     baseURL: API_URL,
     headers: {
@@ -9,7 +22,7 @@ const api = axios.create({
     }
 });
 
-// Update token before each request
+// Sync token with latest localStorage state before each request
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -18,6 +31,10 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+/**
+ * Persists a new leave application in the system.
+ * @param {Object} leaveData - Includes type, dates, and reason.
+ */
 export const addLeave = async (leaveData) => {
     try {
         const response = await api.post('/add', leaveData);
@@ -27,6 +44,10 @@ export const addLeave = async (leaveData) => {
     }
 };
 
+/**
+ * Retrieves the complete registry of leave requests.
+ * Used primarily for the administrative overview.
+ */
 export const getLeaves = async () => {
     try {
         const response = await api.get('/get');
@@ -36,6 +57,9 @@ export const getLeaves = async () => {
     }
 };
 
+/**
+ * Fetches all leave records archived for a specific employee.
+ */
 export const getEmployeeLeaves = async (employeeID) => {
     try {
         const response = await api.get(`/employee/${employeeID}`);
@@ -45,6 +69,9 @@ export const getEmployeeLeaves = async (employeeID) => {
     }
 };
 
+/**
+ * Decision Logic: Updates the status (Approved/Rejected/Pending) of a request.
+ */
 export const updateLeaveStatus = async (id, status) => {
     try {
         const response = await api.put(`/update/${id}`, { status });

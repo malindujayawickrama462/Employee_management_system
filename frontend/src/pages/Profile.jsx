@@ -1,17 +1,29 @@
+/**
+ * Profile.jsx - Personal Identity & Registry Management
+ * 
+ * This component allows employees (and admins) to view their personnel data
+ * and update basic contact information. It features a sophisticated 
+ * "Modify/Commit" workflow to prevent accidental data changes.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import AdminSidebar from '../components/AdminSidebar';
 import Header from '../components/Header';
-import { User, Mail, Briefcase, MapPin, Calendar, Phone, Edit, Save, X, Hash, ShieldCheck, BadgeCheck } from 'lucide-react';
+import { User, Mail, Briefcase, MapPin, Calendar, Phone, Edit, Save, X, Hash, ShieldCheck, BadgeCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { getMe, updateMe } from '../utils/employeeApi';
 
 const Profile = () => {
     const { user } = useAuth();
+
+    // -- Data & UI State --
     const [employee, setEmployee] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [editMode, setEditMode] = useState(false);
+    const [editMode, setEditMode] = useState(false); // Toggles between read-only and form input
     const [message, setMessage] = useState({ type: '', text: '' });
+
+    // -- Form Buffer --
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -20,15 +32,22 @@ const Profile = () => {
 
     const isAdmin = user?.role === 'admin';
 
+    /**
+     * Effect: Load Profile on Mount
+     */
     useEffect(() => {
         fetchEmployeeData();
     }, []);
 
+    /**
+     * fetchEmployeeData - Retrieves full personnel details from the backend.
+     */
     const fetchEmployeeData = async () => {
         try {
             setLoading(true);
             const data = await getMe();
             setEmployee(data);
+            // Sync form buffer with retrieved data
             setFormData({
                 name: data.name || '',
                 email: data.email || '',
@@ -47,22 +66,29 @@ const Profile = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    /**
+     * handleSubmit - Commits changes to the server and refreshes the local state.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
             await updateMe(formData);
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
-            setEditMode(false);
-            fetchEmployeeData();
+            setEditMode(false); // Exit edit mode on success
+            fetchEmployeeData(); // Refresh UI with server truth
         } catch (error) {
             setMessage({ type: 'error', text: error.msg || 'Failed to update profile.' });
         } finally {
             setLoading(false);
+            // Self-dismissing notification
             setTimeout(() => setMessage({ type: '', text: '' }), 5000);
         }
     };
 
+    /**
+     * Initial Loading State (Skeleton or Spinner)
+     */
     if (loading && !employee) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-[var(--base-foundation)]">
@@ -76,6 +102,7 @@ const Profile = () => {
 
     return (
         <div className="flex min-h-screen">
+            {/* Sidebar selection based on active role hierarchy */}
             {isAdmin ? <AdminSidebar /> : <Sidebar />}
 
             <div className={`flex-1 flex flex-col ml-72 transition-all duration-500`}>
@@ -83,13 +110,15 @@ const Profile = () => {
 
                 <main className="flex-1 p-8 pt-12 animate-fade-in relative">
                     <div className="max-w-5xl mx-auto">
-                        {/* Header Section */}
+
+                        {/* Title Section with Action Controls */}
                         <div className="flex justify-between items-end mb-12">
                             <div>
                                 <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-2">Personnel <span className="text-indigo-600">Profile</span></h1>
                                 <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Registry Management • Internal Identity Card</p>
                             </div>
 
+                            {/* View Switcher Controls */}
                             {!editMode ? (
                                 <button
                                     onClick={() => setEditMode(true)}
@@ -110,6 +139,7 @@ const Profile = () => {
                                     <button
                                         onClick={() => {
                                             setEditMode(false);
+                                            // Revert changes on discard
                                             setFormData({
                                                 name: employee.name,
                                                 email: employee.email,
@@ -125,6 +155,7 @@ const Profile = () => {
                             )}
                         </div>
 
+                        {/* Status Messaging */}
                         {message.text && (
                             <div className={`mb-10 p-5 rounded-[2rem] shadow-xl animate-fade-in glass border-l-8 ${message.type === 'success' ? 'border-green-500 text-green-800' : 'border-red-500 text-red-800'
                                 }`}>
@@ -136,7 +167,8 @@ const Profile = () => {
                         )}
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                            {/* Identity Card */}
+
+                            {/* Identity Card - Non-editable primary identification */}
                             <div className="lg:col-span-1 space-y-8">
                                 <div className="glass p-10 rounded-[3.5rem] border border-white/50 shadow-2xl relative overflow-hidden flex flex-col items-center">
                                     <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-br from-indigo-600 to-purple-700" />
@@ -163,6 +195,7 @@ const Profile = () => {
                                     </div>
                                 </div>
 
+                                {/* Unique Identifier Token */}
                                 <div className="glass p-8 rounded-[2.5rem] border border-white/50 shadow-xl space-y-4">
                                     <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-2">System Footprint</h3>
                                     <div className="p-4 bg-gray-50/50 rounded-2xl flex items-center gap-4">
@@ -175,7 +208,7 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                            {/* Detailed Information */}
+                            {/* Detailed Information - Editable Fields */}
                             <div className="lg:col-span-2 space-y-8">
                                 <div className="glass p-12 rounded-[3.5rem] border border-white/50 shadow-2xl">
                                     <div className="flex items-center gap-4 mb-10">

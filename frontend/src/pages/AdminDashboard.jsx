@@ -1,3 +1,13 @@
+/**
+ * AdminDashboard.jsx - Central Management Hub for Administrators
+ * 
+ * This component serves as the primary interface for system admins. It manages:
+ * 1. Unified data fetching (Employees, Departments, Payroll).
+ * 2. Role-based view switching via tabs (Overview, Registry, Structure).
+ * 3. Lifecycle management for employees and departments (Add/Edit/Delete).
+ * 4. Permission delegation (Assigning/Removing Managers).
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +17,7 @@ import { getAllDepartments, addDepartment, deleteDepartment, assignManager, remo
 import { getAllPayrolls } from '../utils/payrollApi';
 import AdminSidebar from '../components/AdminSidebar';
 
+// Modular components for different dashboard sections
 import DashboardHeader from '../components/DashboardHeader';
 import StatsGrid from '../components/StatsGrid';
 import RecentArrivals from '../components/RecentArrivals';
@@ -21,28 +32,26 @@ const AdminDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    // Tab state
-    const [activeTab, setActiveTab] = useState('overview');
-
-    // Modal states
+    // -- Component State --
+    const [activeTab, setActiveTab] = useState('overview'); // Controls visible content section
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showDepartmentModal, setShowDepartmentModal] = useState(false);
     const [showManagerModal, setShowManagerModal] = useState(false);
     const [editingEmployee, setEditingEmployee] = useState(null);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
 
-    // Data states
+    // -- Data State --
     const [employees, setEmployees] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [payrolls, setPayrolls] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
+    const [message, setMessage] = useState({ type: '', text: '' }); // Global notification state
 
-    // Search state
+    // -- Search & Filtering --
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredEmployees, setFilteredEmployees] = useState([]);
 
-    // Form states
+    // -- Form Buffer States --
     const [employeeForm, setEmployeeForm] = useState({
         employeeID: '', name: '', email: '', password: '',
         address: '', nic: '', position: '', salary: '', department: ''
@@ -50,19 +59,28 @@ const AdminDashboard = () => {
     const [departmentForm, setDepartmentForm] = useState({ departmentID: '', name: '' });
     const [managerForm, setManagerForm] = useState({ managerID: '' });
 
-    // Statistics
+    // -- Aggregate Stats --
     const [stats, setStats] = useState({
         totalEmployees: 0, totalDepartments: 0, monthlyPayroll: 0, pendingLeaves: 0
     });
 
+    /**
+     * Initial Data Load
+     */
     useEffect(() => {
         fetchAllData();
     }, []);
 
+    /**
+     * Client-side search filtering
+     */
     useEffect(() => {
         filterEmployees();
     }, [searchTerm, employees]);
 
+    /**
+     * fetchAllData - Orchestrates parallel API calls to populate the dashboard stats and registry.
+     */
     const fetchAllData = async () => {
         setLoading(true);
         try {
@@ -76,6 +94,7 @@ const AdminDashboard = () => {
             setDepartments(departmentsData?.departments || []);
             setPayrolls(payrollsData?.payrolls || []);
 
+            // Calculate current month's payroll aggregate
             const currentMonth = new Date().toLocaleString('default', { month: 'long' });
             const currentYear = new Date().getFullYear();
             const monthlyPayroll = (payrollsData?.payrolls || [])
@@ -95,6 +114,9 @@ const AdminDashboard = () => {
         }
     };
 
+    /**
+     * filterEmployees - Performs a fuzzy search across multiple employee attributes.
+     */
     const filterEmployees = () => {
         if (!searchTerm) {
             setFilteredEmployees(employees);
@@ -108,21 +130,11 @@ const AdminDashboard = () => {
         setFilteredEmployees(filtered);
     };
 
-    const handleEmployeeInputChange = (e) => {
-        const { name, value } = e.target;
-        setEmployeeForm(prev => ({ ...prev, [name]: value }));
-    };
+    // -- CRUD Handlers --
 
-    const handleDepartmentInputChange = (e) => {
-        const { name, value } = e.target;
-        setDepartmentForm(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleManagerInputChange = (e) => {
-        const { name, value } = e.target;
-        setManagerForm(prev => ({ ...prev, [name]: value }));
-    };
-
+    /**
+     * handleEmployeeSubmit - Handles both 'Create' and 'Update' operations for employees.
+     */
     const handleEmployeeSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -136,7 +148,7 @@ const AdminDashboard = () => {
             }
             setShowEmployeeModal(false);
             resetEmployeeForm();
-            fetchAllData();
+            fetchAllData(); // Refresh list
         } catch (error) {
             showMessage('error', error.msg || 'Failed to save employee');
         } finally {
@@ -160,6 +172,9 @@ const AdminDashboard = () => {
         }
     };
 
+    /**
+     * handleAssignManager - Links an employee identity to a department as its manager.
+     */
     const handleAssignManager = async (e) => {
         e.preventDefault();
         try {
@@ -176,19 +191,61 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleRemoveManager = async (departmentID) => {
-        if (!window.confirm("Are you sure?")) return;
-        try {
-            setLoading(true);
-            await removeManager(departmentID);
-            showMessage('success', 'Manager removed successfully');
-            fetchAllData();
-        } catch (error) {
-            showMessage('error', error.msg || 'Failed to remove manager');
-        } finally {
-            setLoading(false);
-        }
+    // -- UI Helper Functions --
+
+    const showMessage = (type, text) => {
+        setMessage({ type, text });
+        setTimeout(() => setMessage({ type: '', text: '' }), 5000);
     };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    };
+
+    const handleEmployeeInputChange = (e) => {
+        const { name, value } = e.target;
+        setEmployeeForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleDepartmentInputChange = (e) => {
+        const { name, value } = e.target;
+        setDepartmentForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleManagerInputChange = (e) => {
+        const { name, value } = e.target;
+        setManagerForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    /**
+     * openEditEmployee - Populates the form buffer with existing data for editing.
+     */
+    const openEditEmployee = (employee) => {
+        setEditingEmployee(employee);
+        setEmployeeForm({
+            employeeID: employee.employeeID || '',
+            name: employee.name || '',
+            email: employee.email || '',
+            password: '',
+            address: employee.address || '',
+            nic: employee.nic || '',
+            position: employee.position || '',
+            salary: employee.salary || '',
+            department: employee.department?._id || ''
+        });
+        setShowEmployeeModal(true);
+    };
+
+    const resetEmployeeForm = () => {
+        setEditingEmployee(null);
+        setEmployeeForm({
+            employeeID: '', name: '', email: '', password: '',
+            address: '', nic: '', position: '', salary: '', department: ''
+        });
+    };
+
+    const resetDepartmentForm = () => setDepartmentForm({ departmentID: '', name: '' });
+    const resetManagerForm = () => setManagerForm({ managerID: '' });
 
     const handleDeleteEmployee = async (employeeID) => {
         if (!window.confirm('Delete this employee?')) return;
@@ -218,40 +275,18 @@ const AdminDashboard = () => {
         }
     };
 
-    const openEditEmployee = (employee) => {
-        setEditingEmployee(employee);
-        setEmployeeForm({
-            employeeID: employee.employeeID || '',
-            name: employee.name || '',
-            email: employee.email || '',
-            password: '',
-            address: employee.address || '',
-            nic: employee.nic || '',
-            position: employee.position || '',
-            salary: employee.salary || '',
-            department: employee.department?._id || ''
-        });
-        setShowEmployeeModal(true);
-    };
-
-    const resetEmployeeForm = () => {
-        setEditingEmployee(null);
-        setEmployeeForm({
-            employeeID: '', name: '', email: '', password: '',
-            address: '', nic: '', position: '', salary: '', department: ''
-        });
-    };
-
-    const resetDepartmentForm = () => setDepartmentForm({ departmentID: '', name: '' });
-    const resetManagerForm = () => setManagerForm({ managerID: '' });
-
-    const showMessage = (type, text) => {
-        setMessage({ type, text });
-        setTimeout(() => setMessage({ type: '', text: '' }), 5000);
-    };
-
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    const handleRemoveManager = async (departmentID) => {
+        if (!window.confirm("Are you sure?")) return;
+        try {
+            setLoading(true);
+            await removeManager(departmentID);
+            showMessage('success', 'Manager removed successfully');
+            fetchAllData();
+        } catch (error) {
+            showMessage('error', error.msg || 'Failed to remove manager');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -259,6 +294,7 @@ const AdminDashboard = () => {
             <AdminSidebar />
 
             <div className="flex-1 ml-72 p-8 pt-12 animate-fade-in relative">
+                {/* Header Section: Tab Switching & Force Refresh */}
                 <DashboardHeader
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
@@ -266,6 +302,7 @@ const AdminDashboard = () => {
                     fetchAllData={fetchAllData}
                 />
 
+                {/* Notifications */}
                 {message.text && (
                     <div className={`mb-8 p-5 rounded-3xl shadow-xl animate-fade-in glass border-l-8 ${message.type === 'success' ? 'border-[var(--accent-success)] text-green-800' : 'border-[var(--accent-danger)] text-red-800'
                         }`}>
@@ -276,12 +313,15 @@ const AdminDashboard = () => {
                     </div>
                 )}
 
+                {/* Main Dynamic Content Area */}
                 {activeTab === 'overview' && (
                     <div className="space-y-12">
+                        {/* High-level performance metrics */}
                         <StatsGrid stats={stats} formatCurrency={formatCurrency} />
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                             <div className="lg:col-span-2 space-y-8">
+                                {/* Chronological list of new personnel */}
                                 <RecentArrivals
                                     employees={employees}
                                     setActiveTab={setActiveTab}
@@ -289,6 +329,7 @@ const AdminDashboard = () => {
                                 />
                             </div>
                             <div className="space-y-8">
+                                {/* One-click access to critical forms */}
                                 <QuickActions
                                     resetEmployeeForm={resetEmployeeForm}
                                     setShowEmployeeModal={setShowEmployeeModal}
@@ -323,6 +364,9 @@ const AdminDashboard = () => {
                 )}
             </div>
 
+            {/* Modal Layers - Rendered outside main flow to avoid z-index conflicts */}
+
+            {/* Employee Add/Edit Portal */}
             <EmployeeModal
                 showEmployeeModal={showEmployeeModal}
                 setShowEmployeeModal={setShowEmployeeModal}
@@ -334,6 +378,7 @@ const AdminDashboard = () => {
                 departments={departments}
             />
 
+            {/* Department Creation Portal */}
             <DepartmentModal
                 showDepartmentModal={showDepartmentModal}
                 setShowDepartmentModal={setShowDepartmentModal}
@@ -343,6 +388,7 @@ const AdminDashboard = () => {
                 resetDepartmentForm={resetDepartmentForm}
             />
 
+            {/* Manager Delegation Portal */}
             <ManagerModal
                 showManagerModal={showManagerModal}
                 setShowManagerModal={setShowManagerModal}

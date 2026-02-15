@@ -1,8 +1,17 @@
+/**
+ * departmentApi.js - Interface for Organizational Structure Services
+ * 
+ * Manages all backend interactions related to departments, including
+ * hierarchy management, manager delegation, and personnel allocation.
+ */
+
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/api/dep';
 
-// Get all departments
+/**
+ * Retrieves the full list of all registered departments.
+ */
 export const getAllDepartments = async () => {
     try {
         const token = localStorage.getItem('token');
@@ -17,7 +26,9 @@ export const getAllDepartments = async () => {
     }
 };
 
-// Add new department
+/**
+ * Creates a new organizational unit (Department).
+ */
 export const addDepartment = async (departmentData) => {
     try {
         const token = localStorage.getItem('token');
@@ -32,7 +43,9 @@ export const addDepartment = async (departmentData) => {
     }
 };
 
-// Update department
+/**
+ * Modifies specific department details.
+ */
 export const updateDepartment = async (id, departmentData) => {
     try {
         const token = localStorage.getItem('token');
@@ -47,7 +60,10 @@ export const updateDepartment = async (id, departmentData) => {
     }
 };
 
-// Delete department
+/**
+ * Deletes a department. 
+ * WARNING: Ensure all employees are transferred or removed before deletion.
+ */
 export const deleteDepartment = async (id) => {
     try {
         const token = localStorage.getItem('token');
@@ -62,7 +78,9 @@ export const deleteDepartment = async (id) => {
     }
 };
 
-// Assign manager to department
+/**
+ * Delegation Logic: Assigns an employee as the official manager of a department.
+ */
 export const assignManager = async (departmentID, managerID) => {
     try {
         const token = localStorage.getItem('token');
@@ -80,7 +98,9 @@ export const assignManager = async (departmentID, managerID) => {
     }
 };
 
-// Remove manager from department
+/**
+ * Revokes manager status from a department.
+ */
 export const removeManager = async (departmentID) => {
     try {
         const token = localStorage.getItem('token');
@@ -98,7 +118,9 @@ export const removeManager = async (departmentID) => {
     }
 };
 
-// Add employee to department
+/**
+ * Allocation Logic: Adds a specific employee to a department's roster.
+ */
 export const addEmployeeToDepartment = async (departmentID, employeeID) => {
     try {
         const token = localStorage.getItem('token');
@@ -116,7 +138,9 @@ export const addEmployeeToDepartment = async (departmentID, employeeID) => {
     }
 };
 
-// Transfer employee to another department
+/**
+ * Mobility Logic: Seamlessly moves an employee from one department to another.
+ */
 export const transferEmployee = async (employeeID, newDepartmentID) => {
     try {
         const token = localStorage.getItem('token');
@@ -134,7 +158,9 @@ export const transferEmployee = async (employeeID, newDepartmentID) => {
     }
 };
 
-// Get employees by department
+/**
+ * Filtering Logic: Retrieves all employees currently assigned to a specific department.
+ */
 export const getEmployeesByDepartment = async (departmentID) => {
     try {
         const token = localStorage.getItem('token');

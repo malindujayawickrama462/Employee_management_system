@@ -1,8 +1,19 @@
+/**
+ * employeeApi.js - Interface for Personnel Management Services
+ * 
+ * Provides abstraction for all CRUD operations related to employees.
+ * Note: While these functions currently manage headers manually, 
+ * centralizing via the 'api.js' utility is recommended for future refactors.
+ */
+
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/api/employee';
 
-// Get all employees
+/**
+ * Retrieves a comprehensive list of all personnel in the system.
+ * Requires Admin/HR privileges.
+ */
 export const getAllEmployees = async () => {
     try {
         const token = localStorage.getItem('token');
@@ -17,7 +28,9 @@ export const getAllEmployees = async () => {
     }
 };
 
-// Get employee by ID
+/**
+ * Fetches a specific employee record using their unique system ID.
+ */
 export const getEmployeeById = async (employeeID) => {
     try {
         const token = localStorage.getItem('token');
@@ -32,7 +45,9 @@ export const getEmployeeById = async (employeeID) => {
     }
 };
 
-// Add new employee
+/**
+ * Registers a new employee profile in the database.
+ */
 export const addEmployee = async (employeeData) => {
     try {
         const token = localStorage.getItem('token');
@@ -47,7 +62,9 @@ export const addEmployee = async (employeeData) => {
     }
 };
 
-// Update employee
+/**
+ * Modifies existing employee records (Salary, Position, Department, etc.).
+ */
 export const updateEmployee = async (employeeID, employeeData) => {
     try {
         const token = localStorage.getItem('token');
@@ -62,7 +79,9 @@ export const updateEmployee = async (employeeID, employeeData) => {
     }
 };
 
-// Delete employee
+/**
+ * Permanently removes an employee profile from the registry.
+ */
 export const deleteEmployee = async (employeeID) => {
     try {
         const token = localStorage.getItem('token');
@@ -77,7 +96,10 @@ export const deleteEmployee = async (employeeID) => {
     }
 };
 
-// Get current logged in employee's profile
+/**
+ * Securely retrieves the currently authenticated user's own profile.
+ * Used for the "My Profile" view.
+ */
 export const getMe = async () => {
     try {
         const token = localStorage.getItem('token');
@@ -92,7 +114,9 @@ export const getMe = async () => {
     }
 };
 
-// Update current logged in employee's profile
+/**
+ * Allows the current user to update their own contact information.
+ */
 export const updateMe = async (employeeData) => {
     try {
         const token = localStorage.getItem('token');

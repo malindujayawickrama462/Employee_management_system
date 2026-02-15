@@ -1,3 +1,11 @@
+/**
+ * EmployeeDashboard.jsx - Personalized Hub for Team Members
+ * 
+ * This component provides employees with a high-level overview of their 
+ * standing within the organization, including leave balances, performance 
+ * metrics, and quick access to critical actions like leave requests.
+ */
+
 import React, { useState, useEffect } from 'react';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useAuth } from '../context/AuthContext';
@@ -16,15 +24,26 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+/**
+ * StatCard - Reusable visual indicator for a single metric
+ * @param {LucideIcon} icon - The icon to display
+ * @param {string} title - Label for the metric
+ * @param {string} value - The primary data point
+ * @param {string} color - Tailwind color theme for the card
+ * @param {string} description - Supporting text
+ */
 const StatCard = ({ icon: Icon, title, value, color, description }) => (
     <div className="glass group p-8 rounded-[2.5rem] hover-lift relative overflow-hidden transition-all duration-500">
+        {/* Decorative background glow that activates on hover */}
         <div className={`absolute top-0 right-0 w-32 h-32 bg-${color}-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity group-hover:opacity-100 opacity-60`} />
+
         <div className="flex items-center justify-between mb-8">
             <div className={`p-4 bg-white shadow-inner rounded-2xl text-${color}-600 border border-white/50`}>
                 <Icon className="w-7 h-7" />
             </div>
             <ArrowUpRight className="w-5 h-5 text-gray-300 group-hover:text-indigo-500 transition-colors" />
         </div>
+
         <div className="relative">
             <h3 className="text-gray-400 font-black text-[10px] tracking-widest uppercase mb-1">{title}</h3>
             <p className="text-3xl font-black text-gray-900 tracking-tight">{value}</p>
@@ -36,6 +55,7 @@ const StatCard = ({ icon: Icon, title, value, color, description }) => (
 const EmployeeDashboard = () => {
     const { user } = useAuth();
 
+    // -- Dashboard Metrics Mapping --
     const stats = [
         { icon: Calendar, title: 'Leave Registry', value: '12 Days', color: 'indigo', description: 'Total available units' },
         { icon: Clock, title: 'Performance Index', value: '98.2%', color: 'emerald', description: 'Quarterly attendance' },
@@ -49,8 +69,10 @@ const EmployeeDashboard = () => {
                 <Sidebar />
                 <div className="flex-1 flex flex-col ml-72 transition-all duration-500">
                     <Header />
+
                     <main className="flex-1 p-10 pt-12 animate-fade-in relative">
-                        {/* Welcome Section */}
+
+                        {/* Welcome Section - Focuses on User Identity */}
                         <div className="mb-14 flex items-end justify-between">
                             <div>
                                 <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-3">
@@ -68,7 +90,7 @@ const EmployeeDashboard = () => {
                             </div>
                         </div>
 
-                        {/* Stats Grid */}
+                        {/* Metrics Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                             {stats.map((stat, index) => (
                                 <StatCard key={index} {...stat} />
@@ -76,7 +98,8 @@ const EmployeeDashboard = () => {
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                            {/* Activity Ledger */}
+
+                            {/* Activity Ledger - Recent System Events */}
                             <div className="lg:col-span-2 glass p-10 rounded-[3.5rem] border border-white/50 shadow-2xl relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
 
@@ -112,7 +135,7 @@ const EmployeeDashboard = () => {
                                 </div>
                             </div>
 
-                            {/* Tactical Actions */}
+                            {/* Tactical Actions - Direct Access to Primary Flows */}
                             <div className="space-y-8">
                                 <div className="glass p-10 rounded-[3.5rem] border border-indigo-100 shadow-2xl bg-gradient-to-br from-indigo-600 to-purple-700 text-white relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
@@ -129,6 +152,7 @@ const EmployeeDashboard = () => {
                                         </Link>
                                     </div>
 
+                                    {/* Passive Information Display */}
                                     <div className="mt-12 pt-8 border-t border-white/10 relative">
                                         <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">Upcoming Holiday</p>
                                         <div className="flex items-center justify-between">
@@ -138,6 +162,7 @@ const EmployeeDashboard = () => {
                                     </div>
                                 </div>
 
+                                {/* Resource Hub - Static Information Links */}
                                 <div className="glass p-8 rounded-[2.5rem] border border-white/50 shadow-xl flex items-center justify-between group cursor-pointer hover:bg-white transition-all">
                                     <div className="flex items-center gap-4">
                                         <div className="p-3 bg-rose-50 rounded-2xl text-rose-500">
