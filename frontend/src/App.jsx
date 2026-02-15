@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Leaves from './pages/Leaves';
 import Payroll from './pages/Payroll';
 import Salary from './pages/Salary';
+import Settings from './pages/Settings';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -59,6 +60,11 @@ function App() {
           <Route path="/salary" element={
             <RoleBaseRoutes requiredRole={["admin", "employee"]}>
               <Salary />
+            </RoleBaseRoutes>
+          } />
+          <Route path="/settings" element={
+            <RoleBaseRoutes requiredRole={["admin", "employee", "hr"]}>
+              <Settings />
             </RoleBaseRoutes>
           } />
         </Routes>

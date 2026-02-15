@@ -170,7 +170,7 @@ const Payroll = () => {
     return (
         <div className="flex min-h-screen">
             <AdminSidebar />
-            <div className="flex-1 ml-72 p-8 pt-12 animate-fade-in relative">
+            <div className="flex-1 ml-72 p-10 pt-12 animate-fade-in relative transition-all duration-500">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div>

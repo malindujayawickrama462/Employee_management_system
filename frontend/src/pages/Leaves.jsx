@@ -17,7 +17,7 @@ const Leaves = () => {
             <div className="flex-1 flex flex-col">
                 {!isAdmin && <Header />}
 
-                <main className={`flex-1 ${isAdmin ? 'ml-72' : 'ml-64'} transition-all duration-500`}>
+                <main className={`flex-1 ml-72 transition-all duration-500`}>
                     {isAdmin ? <LeaveManagement /> : <Leave />}
                 </main>
             </div>
