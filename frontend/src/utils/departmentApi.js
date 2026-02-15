@@ -66,7 +66,7 @@ export const deleteDepartment = async (id) => {
 export const assignManager = async (departmentID, managerID) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.put(`${API_URL}/assign-m/`,
+        const response = await axios.put(`${API_URL}/assign-m`,
             { departmentID, managerID },
             {
                 headers: {

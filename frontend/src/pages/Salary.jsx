@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
 import { getEmployeePayrolls, downloadPayslip } from '../utils/payrollApi';
-import { DollarSign, Download, Calendar, TrendingUp, Wallet, BarChart3 } from 'lucide-react';
+import { DollarSign, Download, Calendar, TrendingUp, Wallet, BarChart3, ArrowUpRight, ChevronRight, RefreshCw } from 'lucide-react';
 
 const Salary = () => {
     const { user } = useAuth();
@@ -44,16 +44,13 @@ const Salary = () => {
         const currentYear = new Date().getFullYear();
         const currentMonth = new Date().toLocaleString('default', { month: 'long' });
 
-        // Current month salary
         const currentMonthData = data.find(p => p.year === currentYear && p.month === currentMonth);
         const currentMonthSalary = currentMonthData?.netSalary || 0;
 
-        // YTD earnings
         const ytd = data
             .filter(p => p.year === currentYear)
             .reduce((sum, p) => sum + (p.netSalary || 0), 0);
 
-        // Average monthly salary
         const average = data.length > 0
             ? data.reduce((sum, p) => sum + (p.netSalary || 0), 0) / data.length
             : 0;
@@ -92,147 +89,122 @@ const Salary = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50">
+        <div className="flex min-h-screen">
             <Sidebar />
-            <div className="flex-1 ml-64 p-8">
+
+            <div className="flex-1 ml-72 p-8 pt-12 animate-fade-in relative">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                        My Salary
-                    </h1>
-                    <p className="text-gray-600">View your salary history and download payslips</p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                    <div>
+                        <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-3">
+                            Financial <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Health</span>
+                        </h1>
+                        <p className="text-lg text-gray-500 font-medium">
+                            Earnings History • <span className="text-indigo-600">Premium Ledger</span>
+                        </p>
+                    </div>
                 </div>
 
-                {/* Message Alert */}
                 {message.text && (
-                    <div className={`mb-6 p-4 rounded-lg shadow-md animate-fade-in ${message.type === 'success'
-                            ? 'bg-green-100 border-l-4 border-green-500 text-green-700'
-                            : 'bg-red-100 border-l-4 border-red-500 text-red-700'
+                    <div className={`mb-8 p-5 rounded-3xl shadow-xl animate-fade-in glass border-l-8 ${message.type === 'success' ? 'border-green-500 text-green-800' : 'border-red-500 text-red-800'
                         }`}>
-                        {message.text}
+                        <span className="font-bold">{message.text}</span>
                     </div>
                 )}
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-white bg-opacity-20 rounded-lg">
-                                <Wallet className="w-8 h-8" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                    {[
+                        { label: 'This Month', value: formatCurrency(stats.currentMonth), icon: Wallet, color: 'emerald' },
+                        { label: 'Year To Date', value: formatCurrency(stats.ytdEarnings), icon: DollarSign, color: 'indigo' },
+                        { label: 'Average Earnings', value: formatCurrency(stats.averageMonthly), icon: BarChart3, color: 'purple' }
+                    ].map((item, idx) => (
+                        <div key={idx} className="glass group p-8 rounded-[2.5rem] hover-lift relative overflow-hidden">
+                            <div className={`absolute top-0 right-0 w-32 h-32 bg-${item.color}-500/10 rounded-full blur-3xl -mr-16 -mt-16`} />
+                            <div className="flex items-center justify-between mb-6">
+                                <div className={`p-4 bg-white shadow-inner rounded-2xl text-${item.color}-600`}>
+                                    <item.icon className="w-8 h-8" />
+                                </div>
+                                <ArrowUpRight className="w-6 h-6 text-gray-300 group-hover:text-indigo-500 transition-colors" />
                             </div>
-                            <TrendingUp className="w-6 h-6 opacity-70" />
+                            <h3 className="text-gray-500 font-bold text-sm tracking-widest uppercase mb-1">{item.label}</h3>
+                            <p className="text-3xl font-black text-gray-900">{item.value}</p>
                         </div>
-                        <h3 className="text-sm font-medium opacity-90 mb-1">Current Month</h3>
-                        <p className="text-3xl font-bold">{formatCurrency(stats.currentMonth)}</p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-white bg-opacity-20 rounded-lg">
-                                <DollarSign className="w-8 h-8" />
-                            </div>
-                            <Calendar className="w-6 h-6 opacity-70" />
-                        </div>
-                        <h3 className="text-sm font-medium opacity-90 mb-1">Year to Date</h3>
-                        <p className="text-3xl font-bold">{formatCurrency(stats.ytdEarnings)}</p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-white bg-opacity-20 rounded-lg">
-                                <BarChart3 className="w-8 h-8" />
-                            </div>
-                            <TrendingUp className="w-6 h-6 opacity-70" />
-                        </div>
-                        <h3 className="text-sm font-medium opacity-90 mb-1">Average Monthly</h3>
-                        <p className="text-3xl font-bold">{formatCurrency(stats.averageMonthly)}</p>
-                    </div>
+                    ))}
                 </div>
 
                 {/* Salary History Table */}
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100">
-                    <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600">
-                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                            <Calendar className="w-5 h-5" />
-                            Salary History
+                <section className="glass p-10 rounded-[3rem] animate-fade-in overflow-hidden">
+                    <div className="flex items-center justify-between mb-10">
+                        <h2 className="text-3xl font-black text-gray-900 tracking-tighter flex items-center gap-3">
+                            <Calendar className="w-8 h-8 text-indigo-600" />
+                            Payroll Registry
                         </h2>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gray-50 border-b border-gray-200">
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Period</th>
-                                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Base Salary</th>
-                                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Allowances</th>
-                                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Deductions</th>
-                                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Gross Salary</th>
-                                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Tax</th>
-                                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Net Salary</th>
-                                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">Actions</th>
+
+                    <div className="overflow-x-auto min-h-[400px]">
+                        <table className="w-full border-separate border-spacing-y-4">
+                            <thead>
+                                <tr className="text-left text-gray-400 text-xs font-black uppercase tracking-[0.2em]">
+                                    <th className="px-6">Reporting Period</th>
+                                    <th className="px-6 text-right">Accounting (Gross)</th>
+                                    <th className="px-6 text-right">Net Value</th>
+                                    <th className="px-6 text-center">Documentation</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody>
                                 {loading ? (
                                     <tr>
-                                        <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
-                                            <div className="flex items-center justify-center gap-2">
-                                                <div className="w-6 h-6 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                                                Loading salary history...
+                                        <td colSpan="4" className="px-6 py-20 text-center">
+                                            <div className="flex flex-col items-center gap-4">
+                                                <RefreshCw className="w-12 h-12 text-indigo-200 animate-spin" />
+                                                <span className="font-black text-gray-400 tracking-widest uppercase text-xs">Accessing Records...</span>
                                             </div>
                                         </td>
                                     </tr>
                                 ) : payrolls.length === 0 ? (
                                     <tr>
-                                        <td colSpan="8" className="px-6 py-12 text-center">
-                                            <div className="flex flex-col items-center gap-3">
-                                                <DollarSign className="w-16 h-16 text-gray-300" />
-                                                <p className="text-gray-500 text-lg">No salary records found</p>
-                                                <p className="text-gray-400 text-sm">Your salary history will appear here once payroll is generated</p>
+                                        <td colSpan="4" className="px-6 py-20 text-center">
+                                            <div className="flex flex-col items-center gap-4">
+                                                <TrendingUp className="w-12 h-12 text-gray-200" />
+                                                <span className="font-black text-gray-400 tracking-widest uppercase text-xs">No Financial History Detected</span>
                                             </div>
                                         </td>
                                     </tr>
                                 ) : (
                                     payrolls.map((payroll) => (
-                                        <tr
-                                            key={payroll._id}
-                                            className="hover:bg-indigo-50 transition-colors"
-                                        >
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-2 text-gray-700 font-medium">
-                                                    <Calendar className="w-4 h-4 text-indigo-600" />
-                                                    {payroll.month} {payroll.year}
+                                        <tr key={payroll._id} className="glass group hover:bg-white transition-all duration-300">
+                                            <td className="px-6 py-6 rounded-l-[1.5rem]">
+                                                <div className="flex items-center gap-5">
+                                                    <div className="w-14 h-14 bg-indigo-50 border-2 border-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 font-black text-xl shadow-inner uppercase">
+                                                        {payroll.month.substring(0, 3)}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-black text-gray-900 text-lg">{payroll.month}</div>
+                                                        <div className="text-sm text-gray-500 font-bold">Financial Year {payroll.year}</div>
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right text-gray-700">
-                                                {formatCurrency(payroll.baseSalary)}
-                                            </td>
-                                            <td className="px-6 py-4 text-right text-green-600 font-medium">
-                                                +{formatCurrency(payroll.allowances)}
-                                            </td>
-                                            <td className="px-6 py-4 text-right text-red-600 font-medium">
-                                                -{formatCurrency(payroll.deductions)}
-                                            </td>
-                                            <td className="px-6 py-4 text-right font-medium text-gray-900">
-                                                {formatCurrency(payroll.grossSalary)}
-                                            </td>
-                                            <td className="px-6 py-4 text-right text-orange-600 font-medium">
-                                                -{formatCurrency(payroll.tax)}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-1">
-                                                    <TrendingUp className="w-4 h-4 text-green-600" />
-                                                    <span className="font-bold text-green-600 text-lg">
-                                                        {formatCurrency(payroll.netSalary)}
-                                                    </span>
+                                            <td className="px-6 py-6 text-right">
+                                                <div className="text-gray-900 font-bold truncate">
+                                                    <span className="text-xs text-gray-400 mr-2 uppercase tracking-tighter">Gross:</span>
+                                                    {formatCurrency(payroll.grossSalary)}
+                                                </div>
+                                                <div className="text-[10px] text-red-400 font-black tracking-widest uppercase">
+                                                    - {formatCurrency(payroll.tax)} Tax
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-center">
+                                            <td className="px-6 py-6 text-right">
+                                                <div className="text-2xl font-black text-emerald-600">{formatCurrency(payroll.netSalary)}</div>
+                                                <div className="text-[10px] text-gray-400 font-black tracking-widest uppercase">Cleared Funds</div>
+                                            </td>
+                                            <td className="px-6 py-6 rounded-r-[1.5rem] text-center">
                                                 <button
                                                     onClick={() => handleDownload(payroll)}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                                    className="inline-flex items-center gap-3 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 group active:scale-95"
                                                 >
-                                                    <Download className="w-4 h-4" />
-                                                    Download
+                                                    <Download className="w-4 h-4 transition-transform group-hover:translate-y-1" />
+                                                    PAYSHEET
                                                 </button>
                                             </td>
                                         </tr>
@@ -241,7 +213,7 @@ const Salary = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     );

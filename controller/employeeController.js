@@ -6,32 +6,43 @@ import bcrypt from "bcrypt";
 
 export async function AddEmployee(req, res) {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role, employeeID } = req.body;
 
-        // 1. Create User account first
+        // 1. Check if user already exists
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ msg: "User with this email already exists" });
         }
 
+        // 2. Check if employee record already exists
+        const employeeExists = await Employee.findOne({ employeeID });
+        if (employeeExists) {
+            return res.status(400).json({ msg: "Employee with this ID already exists" });
+        }
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // 3. Create User account
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
-            role: "employee"
+            role: role || "employee"
         });
 
-        // 2. Create Employee record
+        // 4. Create Employee record
         const employeeData = { ...req.body };
         delete employeeData.password; // Don't store plain password in employee record
+
+        // Handle empty fields to avoid Mongoose CastErrors
+        if (employeeData.department === "") delete employeeData.department;
+        if (employeeData.salary === "") delete employeeData.salary;
 
         const employee = new Employee(employeeData);
         await employee.save();
 
-        // Sync with Department model
+        // 5. Sync with Department model
         if (employee.department) {
             await Department.findByIdAndUpdate(employee.department, {
                 $push: { employees: employee._id }
@@ -87,9 +98,13 @@ export async function UpdateEmployee(req, res) {
             return res.status(404).json({ msg: "Employee not found" });
         }
 
+        const updateData = { ...req.body };
+        if (updateData.department === "") updateData.department = null;
+        if (updateData.salary === "") delete updateData.salary;
+
         const updatedEmployee = await Employee.findOneAndUpdate(
             { employeeID: ID },
-            req.body,
+            updateData,
             { new: true }
         );
 

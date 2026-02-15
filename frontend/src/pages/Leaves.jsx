@@ -32,7 +32,7 @@ const Leaves = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-50 font-sans">
+        <div className="flex min-h-screen font-sans">
             <Sidebar />
             <div className="flex-1 flex flex-col ml-0">
                 <Header />

@@ -41,7 +41,7 @@ const EmployeeDashboard = () => {
 
     return (
         <ErrorBoundary>
-            <div className="flex min-h-screen bg-gray-50 font-sans">
+            <div className="flex min-h-screen font-sans">
                 <Sidebar />
                 <div className="flex-1 flex flex-col ml-0"> {/* Sidebar is fixed, but giving margin-left handled by layout or sidebar wrapper? Sidebar is fixed. Content needs ml-64 */}
                     <Header />

@@ -24,36 +24,41 @@ const AdminSidebar = () => {
     ];
 
     return (
-        <div className="flex flex-col w-64 h-screen bg-gradient-to-b from-indigo-800 to-indigo-600 text-white shadow-xl fixed left-0 top-0">
-            <div className="flex items-center justify-center h-20 shadow-md">
-                <h1 className="text-2xl font-bold tracking-wider">EmpManage</h1>
+        <div className="flex flex-col w-64 h-[calc(100vh-2rem)] m-4 glass rounded-[2.5rem] text-[var(--base-text)] shadow-2xl fixed left-0 top-0 z-50 overflow-hidden border border-white/40">
+            <div className="flex items-center justify-center h-24 border-b border-indigo-100/30 bg-white/40">
+                <h1 className="text-2xl font-black tracking-tighter bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] bg-clip-text text-transparent">
+                    EMP<span className="text-[var(--base-text)]">MANAGE</span>
+                </h1>
             </div>
 
-            <nav className="flex-1 px-4 py-6 space-y-2">
+            <nav className="flex-1 px-4 py-8 space-y-3 overflow-y-auto">
                 {navItems.map((item) => (
                     <NavLink
                         key={item.label}
                         to={item.path}
                         className={({ isActive }) =>
-                            `flex items-center px-4 py-3 rounded-lg transition-all duration-300 ${isActive
-                                ? 'bg-indigo-500 shadow-lg translate-x-1'
-                                : 'hover:bg-indigo-700 hover:translate-x-1'
+                            `flex items-center px-5 py-3.5 rounded-2xl transition-all duration-500 group relative overflow-hidden ${isActive
+                                ? 'bg-[var(--brand-primary)] text-white shadow-lg shadow-[var(--brand-primary)]/20 scale-[1.02]'
+                                : 'text-gray-500 hover:text-[var(--brand-primary)] hover:bg-white/50 hover:scale-[1.02]'
                             }`
                         }
                     >
-                        <item.icon className="w-5 h-5 mr-3" />
-                        <span className="font-medium">{item.label}</span>
+                        <item.icon className="w-5 h-5 mr-4 transition-transform duration-500 group-hover:scale-110" />
+                        <span className="font-black tracking-tight text-sm uppercase text-[10px] tracking-[0.1em]">{item.label}</span>
+
+                        {/* Interactive selection indicator - 10% Accent Role */}
+                        <span className="absolute left-0 top-0 h-full w-1.5 bg-[var(--accent-vibrant)] transform -translate-x-full transition-transform duration-300 opacity-0 group-[.active]:translate-x-0 group-[.active]:opacity-100" />
                     </NavLink>
                 ))}
             </nav>
 
-            <div className="p-4 border-t border-indigo-500">
+            <div className="p-6 border-t border-indigo-100/30 bg-white/20">
                 <button
                     onClick={logout}
-                    className="flex items-center w-full px-4 py-2 text-indigo-100 transition-colors rounded-lg hover:bg-indigo-700 hover:text-white"
+                    className="flex items-center w-full px-5 py-4 text-gray-500 font-black text-[10px] tracking-widest uppercase transition-all duration-300 rounded-2xl hover:bg-[var(--accent-danger)]/10 hover:text-[var(--accent-danger)] group active:scale-95 shadow-inner"
                 >
-                    <LogOut className="w-5 h-5 mr-3" />
-                    <span>Logout</span>
+                    <LogOut className="w-5 h-5 mr-4 transition-transform group-hover:-translate-x-1" />
+                    <span>Secure Logout</span>
                 </button>
             </div>
         </div>

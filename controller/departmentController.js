@@ -1,5 +1,6 @@
 import Department from "../models/department.js";
 import Employee from "../models/employee.js";
+import User from "../models/user.js";
 
 export async function addDepartment(req, res) {
     try {

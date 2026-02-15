@@ -21,6 +21,11 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <div className="bg-mesh-container">
+          <div className="bg-mesh"></div>
+          <div className="bg-grid"></div>
+          <div className="bg-noise"></div>
+        </div>
         <Routes>
           <Route path="/" element={<Navigate to="/admin-dashboard" />} />
           <Route path="/login" element={<Login />} />
