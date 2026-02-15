@@ -1,17 +1,20 @@
 import express from "express";
-import { AddEmployee, deleteEmployee, getEmployeeByID, getEmployees, UpdateEmployee } from "../controller/employeeController.js";
+import { AddEmployee, deleteEmployee, getEmployeeByID, getEmployees, UpdateEmployee, getMe, updateMe } from "../controller/employeeController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/",AddEmployee);
+router.get("/me", protect, getMe);
+router.put("/update-me", protect, updateMe);
 
-router.get("/",getEmployees);
+router.post("/", AddEmployee);
 
-router.get("/:ID",protect,getEmployeeByID);
+router.get("/", getEmployees);
 
-router.put("/:ID",UpdateEmployee);
+router.get("/:ID", protect, getEmployeeByID);
 
-router.delete("/:ID",deleteEmployee);
+router.put("/:ID", UpdateEmployee);
+
+router.delete("/:ID", deleteEmployee);
 
 export default router;

@@ -26,7 +26,8 @@ export async function addDepartment(req, res) {
 
 export async function getDepartments(req, res) {
     try {
-        const departments = await Department.find();
+        const departments = await Department.find()
+            .populate("manager", "employeeID name position");
         res.status(200).json({ success: true, departments });
     } catch (err) {
         res.status(500).json({ error: "get department server error" });
@@ -80,14 +81,18 @@ export async function assignManager(req, res) {
                 msg: "employee not found"
             });
         }
-        const isEmployeeInDept = department.employees.some(
-            emp => emp._id.toString() == employee._id.toString()
-        );
+        const isEmployeeInDept =
+            department.employees.some(emp => emp._id.toString() == employee._id.toString()) ||
+            employee.department?.toString() === department._id.toString();
+
         if (!isEmployeeInDept) {
             return res.status(400).json({
                 msg: "manager must be an employees in this department first"
             });
         } else {
+            // Update User role to manager
+            await User.findOneAndUpdate({ email: employee.email }, { role: 'manager' });
+
             department.manager = employee._id;
             await department.save();
             await department.populate("manager", "employeeID name position");
@@ -111,12 +116,20 @@ export async function removeManager(req, res) {
                 msg: "departmentID required"
             });
         }
-        const department = await Department.findOneAndUpdate({ departmentID: departmentID }, { manager: null }, { new: true });
+        const department = await Department.findOneAndUpdate({ departmentID: departmentID }, { manager: null }, { new: true }).populate("manager");
+
         if (!department) {
             return res.status(400).json({
                 msg: "department not found"
             })
         } else {
+            // Logic: Find the employee who was the manager and demote them
+            // Note: In a production app, you'd check if they are a manager of any OTHER dept first
+            const employee = await Employee.findOne({ employeeID: department.manager?.employeeID });
+            if (employee) {
+                await User.findOneAndUpdate({ email: employee.email }, { role: 'employee' });
+            }
+
             res.status(201).json({
                 msg: "manager removed successfully", department
             });

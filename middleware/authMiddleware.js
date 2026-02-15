@@ -6,8 +6,7 @@ export const protect = async (req, res, next) => {
     let token;
 
     // Check if Authorization header exists
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) 
-        {
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
 
@@ -18,9 +17,9 @@ export const protect = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(token,"malindu123");
+    const decoded = jwt.verify(token, "malindu123");
 
-   
+
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
@@ -38,4 +37,15 @@ export const protect = async (req, res, next) => {
       error: err.message
     });
   }
+};
+
+export const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        msg: `Role (${req.user.role}) is not allowed to access this resource`
+      });
+    }
+    next();
+  };
 };

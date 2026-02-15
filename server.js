@@ -16,7 +16,7 @@ app.get("/", (req, res) => res.send("Hello world"));
 app.use("/api/employee", router)
 app.use("/api/user", userRouter)
 app.use("/api/dep", depRouter)
-app.use("/api/pay", payrollRouter)
+app.use("/api/payroll", payrollRouter)
 
 const port = 3000;
 app.listen(port, () => {

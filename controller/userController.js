@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import Employee from "../models/employee.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -49,12 +50,16 @@ export async function loginUser(req, res) {
         const user = await User.findOne({ email });
         const comparePassword = await bcrypt.compare(password, user.password);
         if (user && comparePassword) {
+            // Find associated employee to get employeeID
+            const employee = await Employee.findOne({ email: user.email });
+
             res.status(201).json({
                 msg: "login successfull",
                 _id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                employeeID: employee ? employee.employeeID : null,
                 token: genarateToken(user._id)
             })
         } else {
@@ -71,12 +76,20 @@ export async function loginUser(req, res) {
 
 export async function getUser(req, res) {
     try {
-        const { _id, name, email, role } = await User.findById(req.user.id)
-        res.status(201).json({
-            id: _id,
-            name,
-            email,
-            role,
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
+
+        // Find associated employee
+        const employee = await Employee.findOne({ email: user.email });
+
+        res.status(200).json({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            employeeID: employee ? employee.employeeID : null
         })
     } catch (err) {
         res.status(400).json({
