@@ -19,6 +19,7 @@ import Payroll from './pages/Payroll';
 import Salary from './pages/Salary';
 import Settings from './pages/Settings';
 import PerformanceManagement from './pages/PerformanceManagement';
+import Analytics from './pages/Analytics';
 import ErrorBoundary from './components/ErrorBoundary';
 
 /**
@@ -94,6 +95,12 @@ function App() {
             <Route path="/performance" element={
               <RoleBaseRoutes requiredRole={["admin", "hr"]}>
                 <PerformanceManagement />
+              </RoleBaseRoutes>
+            } />
+
+            <Route path="/analytics" element={
+              <RoleBaseRoutes requiredRole={["admin", "hr"]}>
+                <Analytics />
               </RoleBaseRoutes>
             } />
 

@@ -27,6 +27,7 @@ import DepartmentStructure from '../components/DepartmentStructure';
 import EmployeeModal from '../components/EmployeeModal';
 import DepartmentModal from '../components/DepartmentModal';
 import ManagerModal from '../components/ManagerModal';
+import EmployeeReportModal from '../components/EmployeeReportModal';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
@@ -37,8 +38,10 @@ const AdminDashboard = () => {
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showDepartmentModal, setShowDepartmentModal] = useState(false);
     const [showManagerModal, setShowManagerModal] = useState(false);
+    const [reportEmployeeID, setReportEmployeeID] = useState(null);
     const [editingEmployee, setEditingEmployee] = useState(null);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
+
 
     // -- Data State --
     const [employees, setEmployees] = useState([]);
@@ -348,7 +351,9 @@ const AdminDashboard = () => {
                         openEditEmployee={openEditEmployee}
                         handleDeleteEmployee={handleDeleteEmployee}
                         formatCurrency={formatCurrency}
+                        setReportEmployeeID={setReportEmployeeID}
                     />
+
                 )}
 
                 {activeTab === 'departments' && (
@@ -398,7 +403,15 @@ const AdminDashboard = () => {
                 handleManagerInputChange={handleManagerInputChange}
                 handleAssignManager={handleAssignManager}
             />
+
+            {reportEmployeeID && (
+                <EmployeeReportModal
+                    employeeID={reportEmployeeID}
+                    onClose={() => setReportEmployeeID(null)}
+                />
+            )}
         </div>
+
     );
 };
 

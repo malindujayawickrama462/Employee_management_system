@@ -10,7 +10,8 @@ import {
     Settings,
     LogOut,
     Lock,
-    TrendingUp
+    TrendingUp,
+    BarChart3
 } from 'lucide-react';
 
 const AdminSidebar = () => {
@@ -23,8 +24,10 @@ const AdminSidebar = () => {
         { icon: DollarSign, label: 'Capital/Payroll', path: '/payroll' },
         { icon: CalendarCheck, label: 'Leave Registry', path: '/leaves' },
         { icon: TrendingUp, label: 'Performance', path: '/performance' },
+        { icon: BarChart3, label: 'Analytics', path: '/analytics' },
         { icon: Settings, label: 'System Config', path: '/settings' },
     ];
+
 
 
     return (

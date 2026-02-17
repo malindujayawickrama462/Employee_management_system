@@ -1,5 +1,4 @@
-import React from 'react';
-import { Users, Search, Edit, Trash2, Building2 } from 'lucide-react';
+import { Users, Search, Edit, Trash2, Building2, BarChart2 } from 'lucide-react';
 
 const EmployeeRegistry = ({
     searchTerm,
@@ -7,8 +6,10 @@ const EmployeeRegistry = ({
     filteredEmployees,
     openEditEmployee,
     handleDeleteEmployee,
-    formatCurrency
+    formatCurrency,
+    setReportEmployeeID
 }) => {
+
     return (
         <section className="glass p-10 rounded-[3rem] animate-fade-in overflow-hidden bg-white/40">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
@@ -67,12 +68,16 @@ const EmployeeRegistry = ({
                                 </td>
                                 <td className="px-6 py-6 rounded-r-[1.5rem] text-center">
                                     <div className="flex items-center justify-center gap-3">
-                                        <button onClick={() => openEditEmployee(emp)} className="p-3 bg-white text-[var(--brand-primary)] rounded-xl hover:bg-[var(--brand-primary)] hover:text-white transition-all shadow-sm">
+                                        <button onClick={() => openEditEmployee(emp)} className="p-3 bg-white text-[var(--brand-primary)] rounded-xl hover:bg-[var(--brand-primary)] hover:text-white transition-all shadow-sm" title="Edit Data">
                                             <Edit className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => handleDeleteEmployee(emp.employeeID)} className="p-3 bg-white text-[var(--accent-danger)] rounded-xl hover:bg-[var(--accent-danger)] hover:text-white transition-all shadow-sm">
+                                        <button onClick={() => setReportEmployeeID(emp.employeeID)} className="p-3 bg-white text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Intelligence Report">
+                                            <BarChart2 className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={() => handleDeleteEmployee(emp.employeeID)} className="p-3 bg-white text-[var(--accent-danger)] rounded-xl hover:bg-[var(--accent-danger)] hover:text-white transition-all shadow-sm" title="Terminate Protocols">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
+
                                     </div>
                                 </td>
                             </tr>
