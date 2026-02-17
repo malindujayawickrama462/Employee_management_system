@@ -6,6 +6,7 @@ import userRouter from "./routes/userRouter.js";
 import depRouter from "./routes/departmentRouter.js";
 import payrollRouter from "./routes/payroll.js";
 import leaveRouter from "./routes/leaveRouter.js";
+import performanceRouter from "./routes/performanceRouter.js";
 
 const app = express();
 //DB connection
@@ -19,6 +20,8 @@ app.use("/api/user", userRouter)
 app.use("/api/dep", depRouter)
 app.use("/api/payroll", payrollRouter)
 app.use("/api/leave", leaveRouter)
+app.use("/api/performance", performanceRouter)
+
 
 const port = 3000;
 app.listen(port, () => {

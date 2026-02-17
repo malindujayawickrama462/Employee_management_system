@@ -9,7 +9,8 @@ import {
     CalendarCheck,
     Settings,
     LogOut,
-    Lock
+    Lock,
+    TrendingUp
 } from 'lucide-react';
 
 const AdminSidebar = () => {
@@ -21,8 +22,10 @@ const AdminSidebar = () => {
         { icon: Building2, label: 'Divisions', path: '/admin-dashboard' },
         { icon: DollarSign, label: 'Capital/Payroll', path: '/payroll' },
         { icon: CalendarCheck, label: 'Leave Registry', path: '/leaves' },
+        { icon: TrendingUp, label: 'Performance', path: '/performance' },
         { icon: Settings, label: 'System Config', path: '/settings' },
     ];
+
 
     return (
         <div className="flex flex-col w-72 h-[calc(100vh-2rem)] m-4 glass rounded-[3rem] text-gray-900 shadow-2xl fixed left-0 top-0 z-50 overflow-hidden border border-white/50 backdrop-blur-3xl transition-all duration-500">
