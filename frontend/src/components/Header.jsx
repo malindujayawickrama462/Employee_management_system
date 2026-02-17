@@ -1,61 +1,108 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Bell, Search, UserCircle, Shield, Globe, Zap } from 'lucide-react';
+import { useNotification } from '../context/NotificationContext';
+import { Bell, Search, UserCircle, Shield, Globe, Zap, Info, Calendar, DollarSign, Clock, Activity, Moon, Sun } from 'lucide-react';
+
+
 
 const Header = () => {
     const { user } = useAuth();
+    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
+    const [showNotifications, setShowNotifications] = React.useState(false);
+    const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'light');
+
+    React.useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    };
+
+
+
+    const getIcon = (type) => {
+        switch (type) {
+            case 'leave': return <Calendar className="w-4 h-4 text-purple-600" />;
+            case 'salary': return <DollarSign className="w-4 h-4 text-emerald-600" />;
+            case 'contract': return <Clock className="w-4 h-4 text-amber-600" />;
+            case 'birthday': return <Zap className="w-4 h-4 text-pink-600" />;
+            default: return <Info className="w-4 h-4 text-indigo-600" />;
+        }
+    };
+
 
     return (
-        <header className="flex items-center justify-between h-24 px-10 glass border-b border-white/50 backdrop-blur-2xl sticky top-0 z-40 transition-all duration-500">
-            <div className="flex items-center w-full max-w-xl">
-                <div className="relative w-full group">
-                    <span className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                        <Search className="w-5 h-5 text-gray-300 group-focus-within:text-indigo-500 transition-colors" />
-                    </span>
+        <header className="sticky top-0 right-0 left-0 h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-40 shadow-sm">
+            {/* Search */}
+            <div className="flex-1 max-w-md">
+                <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
                     <input
                         type="text"
-                        placeholder="Search system protocols..."
-                        className="w-full py-4 pl-16 pr-6 bg-gray-50/50 border-2 border-transparent focus:border-indigo-500/20 focus:bg-white rounded-2xl outline-none font-bold text-sm text-gray-700 transition-all duration-500 shadow-inner group-hover:bg-gray-100/50"
+                        placeholder="Search..."
+                        className="w-full h-10 bg-slate-50 border border-slate-100 rounded-lg pl-11 pr-4 text-sm text-slate-600 focus:bg-white focus:border-indigo-500/50 outline-none transition-all placeholder:text-slate-400"
                     />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
-                        <span className="px-2 py-1 bg-white border border-gray-100 rounded-md text-[8px] font-black text-gray-400 shadow-sm">CTRL</span>
-                        <span className="px-2 py-1 bg-white border border-gray-100 rounded-md text-[8px] font-black text-gray-400 shadow-sm">K</span>
-                    </div>
                 </div>
             </div>
 
-            <div className="flex items-center space-x-8">
-                <div className="hidden lg:flex items-center gap-6 px-6 py-2 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
-                    <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-indigo-600" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-700">Encrypted</span>
-                    </div>
-                    <div className="w-px h-4 bg-indigo-200" />
-                    <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-emerald-600" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700">Global Node</span>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <button className="relative p-3 text-gray-400 transition-all rounded-xl hover:bg-white hover:text-indigo-600 hover:shadow-lg group">
-                        <Bell className="w-6 h-6 transition-transform group-hover:rotate-12" />
-                        <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+            {/* Controls */}
+            <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4 relative">
+                    <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="relative p-2 text-slate-400 hover:text-indigo-600 transition-colors group"
+                    >
+                        <Bell className="w-5 h-5" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-indigo-600 rounded-full text-[8px] font-bold text-white flex items-center justify-center border-2 border-white">
+                                {unreadCount}
+                            </span>
+                        )}
                     </button>
 
-                    <div className="h-10 w-px bg-gray-100 mx-2" />
-
-                    <div className="flex items-center space-x-4 cursor-pointer group p-1 pr-4 rounded-2xl hover:bg-white/50 transition-all duration-300">
-                        <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:scale-105 transition-all duration-300 relative overflow-hidden">
-                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                            <UserCircle className="w-7 h-7 relative z-10" />
-                        </div>
-                        <div className="hidden md:block">
-                            <p className="text-sm font-black text-gray-900 tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{user?.name}</p>
-                            <div className="flex items-center gap-1.5 ">
-                                <Zap className="w-3 h-3 text-indigo-500" />
-                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{user?.role} Access</span>
+                    {showNotifications && (
+                        <div className="absolute top-full right-0 mt-4 w-80 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50 animate-fade-in">
+                            <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Notifications</h4>
+                                <button onClick={markAllAsRead} className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700">Clear All</button>
                             </div>
+                            <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                                {notifications.length > 0 ? (
+                                    notifications.map((n) => (
+                                        <div
+                                            key={n._id}
+                                            onClick={() => markAsRead(n._id)}
+                                            className={`p-4 border-b border-slate-50 hover:bg-slate-50 transition-all cursor-pointer flex gap-4 ${!n.isRead ? 'bg-indigo-50/30' : 'opacity-60'}`}
+                                        >
+                                            <div className="p-2 bg-white rounded-lg h-fit border border-slate-100">
+                                                {getIcon(n.type)}
+                                            </div>
+                                            <div>
+                                                <h5 className="text-xs font-bold text-slate-900">{n.title}</h5>
+                                                <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-8 text-center opacity-30">
+                                        <p className="text-xs font-medium text-slate-500">No Notifications</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="w-px h-6 bg-slate-100 mx-2" />
+
+                    <div className="flex items-center gap-3 pl-2">
+                        <div className="text-right hidden sm:block">
+                            <p className="text-sm font-bold text-slate-900 leading-none">{user?.name}</p>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mt-1">{user?.role}</p>
+                        </div>
+                        <div className="w-9 h-9 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                            <UserCircle className="w-6 h-6" />
                         </div>
                     </div>
                 </div>
@@ -63,5 +110,7 @@ const Header = () => {
         </header>
     );
 };
+
+
 
 export default Header;

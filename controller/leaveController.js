@@ -1,5 +1,8 @@
 import Leave from "../models/leave.js";
 import Employee from "../models/employee.js";
+import Notification from "../models/notification.js";
+import User from "../models/user.js";
+
 
 export const addLeave = async (req, res) => {
     try {
@@ -61,7 +64,22 @@ export const updateLeaveStatus = async (req, res) => {
             return res.status(404).json({ success: false, msg: "Leave record not found" });
         }
 
+        // Notify Employee
+        const employee = await Employee.findOne({ employeeID: leave.employeeID });
+        if (employee) {
+            const user = await User.findOne({ email: employee.email });
+            if (user) {
+                await Notification.create({
+                    recipient: user._id,
+                    title: `Leave Request ${status}`,
+                    message: `Your ${leave.leaveType} request from ${new Date(leave.startDate).toLocaleDateString()} has been ${status.toLowerCase()}.`,
+                    type: "leave"
+                });
+            }
+        }
+
         res.status(200).json({ success: true, leave });
+
     } catch (error) {
         res.status(500).json({ success: false, msg: error.message });
     }

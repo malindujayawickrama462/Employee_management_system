@@ -29,8 +29,17 @@ const EmployeeSchema = new mongoose.Schema({
     department: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "department"
+    },
+    dob: {
+        type: Date
+    },
+    contractExpiry: {
+        type: Date
     }
+}, {
+    timestamps: true
 });
+
 
 const Employee = mongoose.model("employee", EmployeeSchema);
 

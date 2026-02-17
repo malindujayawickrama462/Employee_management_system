@@ -1,80 +1,75 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { NavLink } from 'react-router-dom';
 import {
-    LayoutDashboard,
-    Users,
-    Building2,
-    DollarSign,
-    CalendarCheck,
-    Settings,
-    LogOut,
-    Lock,
-    TrendingUp,
-    BarChart3
+    LayoutDashboard, Users, Building2, Calendar,
+    Settings, LogOut, Shield, ChevronRight, Zap
 } from 'lucide-react';
 
+
 const AdminSidebar = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const { logout } = useAuth();
 
-    const navItems = [
-        { icon: LayoutDashboard, label: 'Control Center', path: '/admin-dashboard' },
-        { icon: Users, label: 'Personnel', path: '/admin-dashboard' },
-        { icon: Building2, label: 'Divisions', path: '/admin-dashboard' },
-        { icon: DollarSign, label: 'Capital/Payroll', path: '/payroll' },
-        { icon: CalendarCheck, label: 'Leave Registry', path: '/leaves' },
-        { icon: TrendingUp, label: 'Performance', path: '/performance' },
-        { icon: BarChart3, label: 'Analytics', path: '/analytics' },
-        { icon: Settings, label: 'System Config', path: '/settings' },
+    const menuItems = [
+        { id: '/admin-dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+        { id: '/employees', icon: Users, label: 'Employees' },
+        { id: '/departments', icon: Building2, label: 'Departments' },
+        { id: '/leaves', icon: Calendar, label: 'Leaves' },
+        { id: '/payroll', icon: Building2, label: 'Payroll' },
+        { id: '/performance', icon: Zap, label: 'Performance' },
+        { id: '/settings', icon: Settings, label: 'Settings' }
     ];
 
-
-
     return (
-        <div className="flex flex-col w-72 h-[calc(100vh-2rem)] m-4 glass rounded-[3rem] text-gray-900 shadow-2xl fixed left-0 top-0 z-50 overflow-hidden border border-white/50 backdrop-blur-3xl transition-all duration-500">
-            <div className="flex flex-col items-center justify-center h-32 border-b border-indigo-50/50 bg-white/40 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
-                <h1 className="text-2xl font-black tracking-tighter bg-gradient-to-br from-indigo-600 to-purple-700 bg-clip-text text-transparent">
-                    EMP<span className="text-neutral-900">SYSTEM</span>
-                </h1>
-                <div className="flex items-center gap-1.5 mt-1">
-                    <Lock className="w-3 h-3 text-indigo-400" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">Secure Protocol v2.0</span>
+        <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 shadow-sm flex flex-col z-[50]">
+            {/* Branding */}
+            <div className="p-8 border-b border-slate-50">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100">
+                        <Shield className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black text-slate-900 tracking-tighter">EMP<span className="text-indigo-600">MS</span></h2>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Admin Portal</p>
+                    </div>
                 </div>
             </div>
 
-            <nav className="flex-1 px-4 py-10 space-y-4 overflow-y-auto custom-scrollbar">
-                {navItems.map((item) => (
-                    <NavLink
-                        key={item.label}
-                        to={item.path}
-                        className={({ isActive }) =>
-                            `flex items-center px-6 py-4 rounded-2xl transition-all duration-500 group relative overflow-hidden ${isActive
-                                ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-200 scale-[1.05] z-10'
-                                : 'text-gray-500 hover:text-indigo-600 hover:bg-white hover:shadow-lg'
-                            }`
-                        }
-                    >
-                        <item.icon className="w-5 h-5 mr-4 transition-transform duration-500 group-hover:rotate-6" />
-                        <span className="font-black tracking-widest text-[10px] uppercase">{item.label}</span>
-
-                        {/* Indicator for Active State */}
-                        <div className="absolute right-4 w-1.5 h-1.5 rounded-full bg-white opacity-0 group-[.active]:opacity-100 transition-opacity" />
-                    </NavLink>
-                ))}
+            <nav className="flex-1 p-4 space-y-1">
+                {menuItems.map((item) => {
+                    const isActive = location.pathname === item.id;
+                    return (
+                        <button
+                            key={item.id}
+                            onClick={() => navigate(item.id)}
+                            className={`w-full group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
+                                ? 'bg-indigo-50 text-indigo-700 font-bold'
+                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                }`}
+                        >
+                            <item.icon className={`w-5 h-5 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                            <span className="text-sm">{item.label}</span>
+                            {isActive && <ChevronRight className="ml-auto w-4 h-4" />}
+                        </button>
+                    );
+                })}
             </nav>
 
-            <div className="p-6 border-t border-indigo-50 bg-white/40">
+            {/* Logout */}
+            <div className="p-4 border-t border-slate-50">
                 <button
                     onClick={logout}
-                    className="flex items-center w-full px-6 py-4 text-gray-400 font-black text-[10px] tracking-widest uppercase transition-all duration-300 rounded-2xl hover:bg-rose-50 hover:text-rose-600 group active:scale-95 shadow-inner border border-transparent hover:border-rose-100"
+                    className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all group"
                 >
-                    <LogOut className="w-5 h-5 mr-4 transition-transform group-hover:-translate-x-1" />
-                    <span>Terminate Session</span>
+                    <LogOut className="w-5 h-5 opacity-60" />
+                    <span className="text-sm font-medium">Logout</span>
                 </button>
             </div>
-        </div>
+        </aside>
     );
 };
+
 
 export default AdminSidebar;

@@ -1,6 +1,9 @@
 import Employee from "../models/employee.js";
 import Payroll from "../models/payroll.js";
+import Notification from "../models/notification.js";
+import User from "../models/user.js";
 import PDFDocument from "pdfkit";
+
 
 // Generate payroll for a single employee
 export async function generatePayroll(req, res) {
@@ -38,7 +41,19 @@ export async function generatePayroll(req, res) {
             netSalary,
         });
 
+        // Notify Employee
+        const user = await User.findOne({ email: employee.email });
+        if (user) {
+            await Notification.create({
+                recipient: user._id,
+                title: "New Payslip Available",
+                message: `Your payslip for ${month} ${year} has been generated. Net Salary: $${netSalary.toLocaleString()}`,
+                type: "salary"
+            });
+        }
+
         res.status(201).json({
+
             msg: "Payroll generated successfully",
             payroll
         });

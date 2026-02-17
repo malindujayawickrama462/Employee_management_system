@@ -1,48 +1,56 @@
 import React from 'react';
+import { Users } from 'lucide-react';
 
 const RecentArrivals = ({ employees, setActiveTab, formatCurrency }) => {
+    const recentOnboarded = employees.slice(0, 5);
+
     return (
-        <section className="glass p-10 rounded-[3rem] bg-white/40">
-            <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-black text-[var(--base-text)] tracking-tight">Recent Arrivals</h2>
-                <button onClick={() => setActiveTab('employees')} className="text-[var(--brand-primary)] font-bold text-sm hover:underline">View All Registry</button>
+        <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Recent Arrivals</h3>
+                    <p className="text-xs font-medium text-slate-500 mt-1">Recently onboarded personnel</p>
+                </div>
+                <button
+                    onClick={() => setActiveTab('employees')}
+                    className="px-5 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                >
+                    View All
+                </button>
             </div>
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                    <thead>
-                        <tr className="text-left text-gray-400 text-xs font-black uppercase tracking-widest border-b border-white/20">
-                            <th className="pb-4 px-2">Identities</th>
-                            <th className="pb-4 px-2">Positions</th>
-                            <th className="pb-4 px-2 text-right">Compensation</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/10">
-                        {employees.slice(0, 4).map((emp) => (
-                            <tr key={emp._id} className="group hover:bg-white/30 transition-colors">
-                                <td className="py-5 px-2">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center font-bold text-[var(--brand-primary)] shadow-inner">
-                                            {emp.name.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <div className="font-black text-[var(--base-text)]">{emp.name}</div>
-                                            <div className="text-xs text-gray-400 font-bold">{emp.employeeID}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="py-5 px-2">
-                                    <div className="font-bold text-gray-600">{emp.position}</div>
-                                    <div className="text-xs text-[var(--accent-vibrant)] font-black uppercase tracking-tighter">{emp.department?.name || 'N/A'}</div>
-                                </td>
-                                <td className="py-5 px-2 text-right font-black text-[var(--base-text)]">
-                                    {formatCurrency(emp.salary || 0)}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+
+            <div className="divide-y divide-slate-100">
+                {recentOnboarded.map((emp) => (
+                    <div key={emp._id} className="p-6 hover:bg-slate-50 transition-colors group flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-500 font-bold group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                {emp.name.charAt(0)}
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-slate-900">{emp.name}</h4>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-[10px] font-medium text-slate-400">{emp.email}</span>
+                                    <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                                    <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">{emp.department?.name || 'Unassigned'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="text-right">
+                            <p className="text-sm font-bold text-slate-900">{formatCurrency ? formatCurrency(emp.salary) : `$${emp.salary}`}</p>
+                            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-0.5">Annual Salary</p>
+                        </div>
+                    </div>
+                ))}
+
+                {recentOnboarded.length === 0 && (
+                    <div className="p-16 text-center">
+                        <Users className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                        <p className="text-xs font-medium text-slate-400">No recent inductions</p>
+                    </div>
+                )}
             </div>
-        </section>
+        </div>
     );
 };
 

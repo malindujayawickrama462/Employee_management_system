@@ -38,6 +38,9 @@ export async function AddEmployee(req, res) {
         // Handle empty fields to avoid Mongoose CastErrors
         if (employeeData.department === "") delete employeeData.department;
         if (employeeData.salary === "") delete employeeData.salary;
+        if (employeeData.dob === "") delete employeeData.dob;
+        if (employeeData.contractExpiry === "") delete employeeData.contractExpiry;
+
 
         const employee = new Employee(employeeData);
         await employee.save();
@@ -101,6 +104,9 @@ export async function UpdateEmployee(req, res) {
         const updateData = { ...req.body };
         if (updateData.department === "") updateData.department = null;
         if (updateData.salary === "") delete updateData.salary;
+        if (updateData.dob === "") updateData.dob = null;
+        if (updateData.contractExpiry === "") updateData.contractExpiry = null;
+
 
         const updatedEmployee = await Employee.findOneAndUpdate(
             { employeeID: ID },

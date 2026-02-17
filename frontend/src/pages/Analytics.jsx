@@ -32,7 +32,6 @@ const Analytics = () => {
             setOverview(overviewRes);
             setDeptData(deptRes.data);
 
-            // Format payroll trends for chart
             const formattedPayroll = payrollRes.data.map(item => ({
                 name: `${item._id.month} ${item._id.year}`,
                 payout: item.total
@@ -48,68 +47,68 @@ const Analytics = () => {
     };
 
     const StatCard = ({ title, value, icon: Icon, color }) => (
-        <div className="glass p-6 rounded-[2.5rem] border border-white/50 shadow-xl flex items-center gap-6 animate-fade-in hover:scale-[1.02] transition-transform">
+        <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm flex items-center gap-6 animate-fade-in hover:shadow-md transition-all">
             <div className={`p-4 rounded-2xl ${color} bg-opacity-10`}>
                 <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
             </div>
             <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{title}</p>
-                <h3 className="text-2xl font-black text-gray-900 mt-1 italic tracking-tighter">{value}</h3>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</p>
+                <h3 className="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{value}</h3>
             </div>
         </div>
     );
 
-    if (loading) return <div className="flex-1 ml-72 p-8 flex items-center justify-center h-screen font-black uppercase tracking-widest text-indigo-600 animate-pulse">Initializing Data Protocols...</div>;
+    if (loading) return <div className="flex-1 ml-72 p-8 flex items-center justify-center h-screen font-bold uppercase tracking-widest text-indigo-600 animate-pulse">Loading Analytics...</div>;
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-slate-50">
             <AdminSidebar />
             <div className="flex-1 ml-72 p-8 pt-12 max-h-screen overflow-y-auto custom-scrollbar">
                 <div className="flex justify-between items-center mb-12">
                     <div>
-                        <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase italic">
-                            Intelligence <span className="text-indigo-600">Reports</span>
+                        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                            Analytics Overview
                         </h1>
-                        <p className="text-gray-500 font-bold tracking-widest text-[10px] uppercase mt-2">
-                            Strategy • Data Analytics • Operational Insights
+                        <p className="text-slate-500 font-medium text-sm mt-1">
+                            System Data & Performance Metrics
                         </p>
                     </div>
-                    <button onClick={() => window.print()} className="flex items-center gap-2 px-6 py-3 bg-white border border-indigo-100 text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-xl shadow-indigo-100">
+                    <button onClick={() => window.print()} className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-all shadow-sm">
                         <Download className="w-4 h-4" />
-                        Export Protocol
+                        Export Data
                     </button>
                 </div>
 
                 {/* Stat Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                    <StatCard title="Total Personnel" value={overview.totalEmployees} icon={Users} color="bg-indigo-600" />
-                    <StatCard title="Divisions" value={overview.totalDepartments} icon={Building2} color="bg-purple-600" />
-                    <StatCard title="Revenue Payout" value={`$${overview.totalPayout?.toLocaleString()}`} icon={DollarSign} color="bg-emerald-600" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <StatCard title="Total Employees" value={overview.totalEmployees} icon={Users} color="bg-indigo-600" />
+                    <StatCard title="Departments" value={overview.totalDepartments} icon={Building2} color="bg-purple-600" />
+                    <StatCard title="Total Payroll" value={`$${overview.totalPayout?.toLocaleString()}`} icon={DollarSign} color="bg-emerald-600" />
                     <StatCard title="Avg Performance" value={`${overview.avgPerformance?.toFixed(1)} / 5`} icon={TrendingUp} color="bg-amber-600" />
                 </div>
 
                 {/* Charts Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                     {/* Department Distribution */}
-                    <div className="glass p-10 rounded-[3rem] border border-white/50 shadow-2xl h-[450px]">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-indigo-900 mb-8 flex items-center gap-2">
-                            <Building2 className="w-4 h-4" /> Personnel Distribution by Division
+                    <div className="bg-white p-10 rounded-[2rem] border border-slate-200 shadow-sm h-[450px]">
+                        <h4 className="text-sm font-bold text-slate-900 mb-8 flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-indigo-600" /> Employees by Department
                         </h4>
                         <ResponsiveContainer width="100%" height="90%">
                             <BarChart data={deptData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 900 }} />
-                                <YAxis tick={{ fontSize: 10, fontWeight: 900 }} />
-                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
-                                <Bar dataKey="count" fill="#4F46E5" radius={[10, 10, 0, 0]} barSize={40} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                                <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                                <YAxis tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                                <Bar dataKey="count" fill="#4F46E5" radius={[8, 8, 0, 0]} barSize={36} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
 
                     {/* Payroll Trends */}
-                    <div className="glass p-10 rounded-[3rem] border border-white/50 shadow-2xl h-[450px]">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-indigo-900 mb-8 flex items-center gap-2">
-                            <DollarSign className="w-4 h-4" /> Liquidity Disbursement Trends
+                    <div className="bg-white p-10 rounded-[2rem] border border-slate-200 shadow-sm h-[450px]">
+                        <h4 className="text-sm font-bold text-slate-900 mb-8 flex items-center gap-2">
+                            <DollarSign className="w-4 h-4 text-indigo-600" /> Monthly Payroll Trends
                         </h4>
                         <ResponsiveContainer width="100%" height="90%">
                             <AreaChart data={payrollTrends}>
@@ -119,21 +118,21 @@ const Analytics = () => {
                                         <stop offset="95%" stopColor="#4F46E5" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 900 }} />
-                                <YAxis tick={{ fontSize: 10, fontWeight: 900 }} />
-                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
-                                <Area type="monotone" dataKey="payout" stroke="#4F46E5" strokeWidth={4} fillOpacity={1} fill="url(#colorPayout)" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                                <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                                <YAxis tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                                <Area type="monotone" dataKey="payout" stroke="#4F46E5" strokeWidth={3} fillOpacity={1} fill="url(#colorPayout)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Role Distribution */}
-                    <div className="glass p-10 rounded-[3rem] border border-white/50 shadow-2xl h-[450px]">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-indigo-900 mb-8 flex items-center gap-2">
-                            <Users className="w-4 h-4" /> Personnel Protocol Allocation
+                    <div className="bg-white p-10 rounded-[2rem] border border-slate-200 shadow-sm h-[450px]">
+                        <h4 className="text-sm font-bold text-slate-900 mb-8 flex items-center gap-2">
+                            <Users className="w-4 h-4 text-indigo-600" /> Employee Roles
                         </h4>
                         <ResponsiveContainer width="100%" height="90%">
                             <PieChart>
@@ -141,8 +140,8 @@ const Analytics = () => {
                                     data={roleDist}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={80}
-                                    outerRadius={120}
+                                    innerRadius={70}
+                                    outerRadius={110}
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
@@ -150,18 +149,18 @@ const Analytics = () => {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
-                                <Legend payload={roleDist.map((item, index) => ({ value: item.name, type: 'circle', color: COLORS[index % COLORS.length] }))} />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
 
-                    {/* Placeholder for Attendance Stats (Coming Soon) */}
-                    <div className="glass p-10 rounded-[3rem] border border-white/50 shadow-2xl h-[450px] flex flex-col items-center justify-center text-center">
-                        <Calendar className="w-16 h-16 text-indigo-100 mb-6" />
-                        <h4 className="text-xl font-black text-gray-900 tracking-tighter uppercase italic">Attendance <span className="text-indigo-600">Sync</span></h4>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2 max-w-[250px]">
-                            Daily attendance tracking and anomaly detection algorithms are being initialized.
+                    {/* Placeholder for Attendance Stats */}
+                    <div className="bg-white p-10 rounded-[2rem] border border-slate-200 shadow-sm h-[450px] flex flex-col items-center justify-center text-center">
+                        <Calendar className="w-16 h-16 text-slate-100 mb-6" />
+                        <h4 className="text-xl font-bold text-slate-900 tracking-tight">Attendance Tracking</h4>
+                        <p className="text-xs font-medium text-slate-400 mt-2 max-w-[280px]">
+                            Daily attendance tracking and reporting features are under development.
                         </p>
                     </div>
                 </div>

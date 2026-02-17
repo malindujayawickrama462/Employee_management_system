@@ -26,108 +26,99 @@ import { Link } from 'react-router-dom';
 
 /**
  * StatCard - Reusable visual indicator for a single metric
- * @param {LucideIcon} icon - The icon to display
- * @param {string} title - Label for the metric
- * @param {string} value - The primary data point
- * @param {string} color - Tailwind color theme for the card
- * @param {string} description - Supporting text
  */
 const StatCard = ({ icon: Icon, title, value, color, description }) => (
-    <div className="glass group p-8 rounded-[2.5rem] hover-lift relative overflow-hidden transition-all duration-500">
-        {/* Decorative background glow that activates on hover */}
-        <div className={`absolute top-0 right-0 w-32 h-32 bg-${color}-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity group-hover:opacity-100 opacity-60`} />
-
-        <div className="flex items-center justify-between mb-8">
-            <div className={`p-4 bg-white shadow-inner rounded-2xl text-${color}-600 border border-white/50`}>
-                <Icon className="w-7 h-7" />
+    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+        <div className="flex items-center justify-between mb-6">
+            <div className={`p-3 bg-${color}-50 text-${color}-600 rounded-xl`}>
+                <Icon className="w-6 h-6" />
             </div>
-            <ArrowUpRight className="w-5 h-5 text-gray-300 group-hover:text-indigo-500 transition-colors" />
+            <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-500 transition-colors" />
         </div>
 
-        <div className="relative">
-            <h3 className="text-gray-400 font-black text-[10px] tracking-widest uppercase mb-1">{title}</h3>
-            <p className="text-3xl font-black text-gray-900 tracking-tight">{value}</p>
-            <p className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-tight">{description}</p>
+        <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{title}</p>
+            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{value}</h3>
+            <p className="text-[10px] font-medium text-slate-500 mt-2">{description}</p>
         </div>
     </div>
 );
 
+
 const EmployeeDashboard = () => {
     const { user } = useAuth();
 
-    // -- Dashboard Metrics Mapping --
+    // -- Dashboard Metrics --
     const stats = [
-        { icon: Calendar, title: 'Leave Registry', value: '12 Days', color: 'indigo', description: 'Total available units' },
-        { icon: Clock, title: 'Performance Index', value: '98.2%', color: 'emerald', description: 'Quarterly attendance' },
-        { icon: Wallet, title: 'Projected Earnings', value: '$2,450', color: 'purple', description: 'Next scheduled transfer' },
-        { icon: FileText, title: 'Active Requests', value: '02', color: 'rose', description: 'Pending administrative actions' },
+        { icon: Calendar, title: 'Leave Balance', value: '12 Days', color: 'indigo', description: 'Available annual leave' },
+        { icon: Clock, title: 'Performance Score', value: '98.2%', color: 'emerald', description: 'Recent performance rating' },
+        { icon: Wallet, title: 'Estimated Salary', value: '$2,450', color: 'purple', description: 'Next payout estimation' },
+        { icon: FileText, title: 'Leave Requests', value: '02', color: 'rose', description: 'Leaves pending approval' },
     ];
 
     return (
         <ErrorBoundary>
-            <div className="flex min-h-screen">
+            <div className="flex min-h-screen bg-slate-50">
                 <Sidebar />
-                <div className="flex-1 flex flex-col ml-72 transition-all duration-500">
+                <div className="flex-1 flex flex-col ml-72 min-h-screen">
                     <Header />
 
-                    <main className="flex-1 p-10 pt-12 animate-fade-in relative">
+                    <main className="flex-1 p-8 animate-fade-in">
 
-                        {/* Welcome Section - Focuses on User Identity */}
-                        <div className="mb-14 flex items-end justify-between">
+                        {/* Welcome Section */}
+                        <div className="mb-10 flex items-end justify-between">
                             <div>
-                                <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-3">
-                                    Operational <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Nexus</span>
+                                <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
+                                    Dashboard
                                 </h1>
-                                <p className="text-lg text-gray-500 font-bold uppercase tracking-widest text-[10px]">
-                                    Identity: <span className="text-indigo-600">{user?.name}</span> • Primary Dashboard
+                                <p className="text-sm font-medium text-slate-500">
+                                    Welcome back, <span className="text-indigo-600 font-bold">{user?.name}</span>
                                 </p>
                             </div>
                             <div className="hidden md:block">
-                                <div className="glass px-6 py-4 rounded-3xl border border-white flex items-center gap-4 shadow-xl">
-                                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
-                                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Active Session Verified</span>
+                                <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">System Online</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Metrics Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                             {stats.map((stat, index) => (
                                 <StatCard key={index} {...stat} />
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                            {/* Activity Ledger - Recent System Events */}
-                            <div className="lg:col-span-2 glass p-10 rounded-[3.5rem] border border-white/50 shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
-
-                                <div className="flex items-center justify-between mb-10 relative">
-                                    <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-                                        <TrendingUp className="w-6 h-6 text-indigo-600" />
-                                        Activity Ledger
+                            {/* Recent Activity */}
+                            <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+                                        <TrendingUp className="w-5 h-5 text-indigo-600" />
+                                        Recent Activity
                                     </h2>
-                                    <button className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline px-4 py-2 bg-indigo-50 rounded-xl">View Archive</button>
+                                    <button className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest hover:underline px-3 py-1.5 bg-indigo-50 rounded-lg">View All</button>
                                 </div>
 
-                                <div className="space-y-6 relative">
+                                <div className="space-y-4">
                                     {[
-                                        { label: 'Leave Authorization', status: 'Approved', time: '2 hours ago', icon: 'L', color: 'emerald' },
-                                        { label: 'Financial Statement', status: 'Generated', time: 'Yesterday', icon: 'F', color: 'indigo' },
-                                        { label: 'System Access Update', status: 'Complete', time: 'Feb 12, 2026', icon: 'S', color: 'purple' }
+                                        { label: 'Leave Request', status: 'Approved', time: '2 hours ago', icon: 'L', color: 'emerald' },
+                                        { label: 'Payroll Generated', status: 'Complete', time: 'Yesterday', icon: 'P', color: 'indigo' },
+                                        { label: 'Profile Update', status: 'Success', time: 'Feb 12, 2026', icon: 'U', color: 'purple' }
                                     ].map((item, i) => (
-                                        <div key={i} className="flex items-center justify-between p-6 glass hover:bg-white transition-all duration-300 rounded-[2rem] group cursor-default">
-                                            <div className="flex items-center gap-6">
-                                                <div className={`w-14 h-14 bg-${item.color}-50 border-2 border-${item.color}-100 rounded-2xl flex items-center justify-center text-${item.color}-600 font-black text-xl shadow-inner`}>
+                                        <div key={i} className="flex items-center justify-between p-4 border border-slate-50 hover:border-slate-100 hover:bg-slate-50/50 transition-all rounded-2xl group cursor-default">
+                                            <div className="flex items-center gap-4">
+                                                <div className={`w-12 h-12 bg-${item.color}-50 rounded-xl flex items-center justify-center text-${item.color}-600 font-bold text-lg`}>
                                                     {item.icon}
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-gray-900 tracking-tight text-lg">{item.label}</p>
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.time}</p>
+                                                    <p className="font-bold text-slate-900 tracking-tight">{item.label}</p>
+                                                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{item.time}</p>
                                                 </div>
                                             </div>
-                                            <span className={`px-4 py-1.5 text-[10px] font-black tracking-widest uppercase rounded-full border bg-${item.color}-100 text-${item.color}-700 border-${item.color}-200`}>
+                                            <span className={`px-2.5 py-1 text-[9px] font-bold tracking-widest uppercase rounded-full bg-${item.color}-50 text-${item.color}-700 border border-${item.color}-100`}>
                                                 {item.status}
                                             </span>
                                         </div>
@@ -135,45 +126,42 @@ const EmployeeDashboard = () => {
                                 </div>
                             </div>
 
-                            {/* Tactical Actions - Direct Access to Primary Flows */}
-                            <div className="space-y-8">
-                                <div className="glass p-10 rounded-[3.5rem] border border-indigo-100 shadow-2xl bg-gradient-to-br from-indigo-600 to-purple-700 text-white relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
-
-                                    <h2 className="text-xl font-black mb-8 tracking-tight relative">Tactical Actions</h2>
-                                    <div className="space-y-4 relative">
-                                        <Link to="/leaves" className="w-full py-5 bg-white text-indigo-700 hover:bg-indigo-50 rounded-2xl transition-all font-black text-[10px] tracking-widest uppercase flex items-center justify-center gap-3 shadow-xl hover-lift">
+                            {/* Quick Actions */}
+                            <div className="space-y-6">
+                                <div className="bg-indigo-600 p-8 rounded-3xl text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+                                    <h2 className="text-lg font-bold mb-6 tracking-tight">Quick Actions</h2>
+                                    <div className="space-y-3">
+                                        <Link to="/leaves" className="w-full py-4 bg-white text-indigo-700 hover:bg-indigo-50 rounded-xl transition-all font-bold text-[11px] tracking-widest uppercase flex items-center justify-center gap-2 shadow-md">
                                             <CalendarCheck className="w-4 h-4" />
-                                            Submit Absence Request
+                                            Request Leave
                                         </Link>
-                                        <Link to="/salary" className="w-full py-5 border-2 border-white/20 hover:bg-white/10 rounded-2xl transition-all font-black text-[10px] tracking-widest uppercase flex items-center justify-center gap-3 shadow-xl">
+                                        <Link to="/salary" className="w-full py-4 border-2 border-white/20 hover:bg-white/10 rounded-xl transition-all font-bold text-[11px] tracking-widest uppercase flex items-center justify-center gap-2">
                                             <DollarSign className="w-4 h-4" />
-                                            Executive Payslip
+                                            View Payslip
                                         </Link>
                                     </div>
 
-                                    {/* Passive Information Display */}
-                                    <div className="mt-12 pt-8 border-t border-white/10 relative">
-                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">Upcoming Holiday</p>
+                                    <div className="mt-10 pt-6 border-t border-white/10">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Next Holiday</p>
                                         <div className="flex items-center justify-between">
-                                            <p className="text-xl font-black tracking-tighter">Independence Day</p>
-                                            <div className="px-3 py-1 bg-white/20 rounded-lg text-[10px] font-black tracking-tighter">MAR 21</div>
+                                            <p className="text-lg font-bold tracking-tight">Independence Day</p>
+                                            <div className="px-2 py-0.5 bg-white/20 rounded-md text-[9px] font-bold tracking-tight">MAR 21</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Resource Hub - Static Information Links */}
-                                <div className="glass p-8 rounded-[2.5rem] border border-white/50 shadow-xl flex items-center justify-between group cursor-pointer hover:bg-white transition-all">
+                                {/* Resources */}
+                                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between group cursor-pointer hover:bg-slate-50 transition-all">
                                     <div className="flex items-center gap-4">
-                                        <div className="p-3 bg-rose-50 rounded-2xl text-rose-500">
+                                        <div className="p-2.5 bg-rose-50 rounded-xl text-rose-500">
                                             <FileText className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Policy Hub</p>
-                                            <p className="text-sm font-black text-gray-900">v2.4 Protocols</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Policy</p>
+                                            <p className="text-xs font-bold text-slate-900">Employee Handbook</p>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-rose-500 transition-all group-hover:translate-x-1" />
+                                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-rose-500 transition-all group-hover:translate-x-1" />
                                 </div>
                             </div>
                         </div>
@@ -183,5 +171,6 @@ const EmployeeDashboard = () => {
         </ErrorBoundary>
     );
 };
+
 
 export default EmployeeDashboard;

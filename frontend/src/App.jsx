@@ -11,7 +11,9 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import RoleBaseRoutes from './utils/RoleBaseRoutes';
+
 import Unauthorized from './pages/Unauthorized';
 import Profile from './pages/Profile';
 import Leaves from './pages/Leaves';
@@ -45,72 +47,75 @@ function App() {
         </div>
 
         {/* Route Definitions with Role-Based Access Control */}
-        <ErrorBoundary>
-          <Routes>
-            {/* Default Redirect to Dashboard */}
-            <Route path="/" element={<Navigate to="/admin-dashboard" />} />
+        <NotificationProvider>
+          <ErrorBoundary>
 
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
+            <Routes>
+              {/* Default Redirect to Dashboard */}
+              <Route path="/" element={<Navigate to="/admin-dashboard" />} />
 
-            {/* Protected Routes - Authorized by role */}
-            <Route path="/admin-dashboard" element={
-              <RoleBaseRoutes requiredRole={["admin"]}>
-                <AdminDashboard />
-              </RoleBaseRoutes>
-            } />
+              {/* Public Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
 
-            <Route path="/employee-dashboard" element={
-              <RoleBaseRoutes requiredRole={["admin", "employee"]}>
-                <EmployeeDashboard />
-              </RoleBaseRoutes>
-            } />
+              {/* Protected Routes - Authorized by role */}
+              <Route path="/admin-dashboard" element={
+                <RoleBaseRoutes requiredRole={["admin"]}>
+                  <AdminDashboard />
+                </RoleBaseRoutes>
+              } />
 
-            <Route path="/profile" element={
-              <RoleBaseRoutes requiredRole={["admin", "employee"]}>
-                <Profile />
-              </RoleBaseRoutes>
-            } />
+              <Route path="/employee-dashboard" element={
+                <RoleBaseRoutes requiredRole={["admin", "employee"]}>
+                  <EmployeeDashboard />
+                </RoleBaseRoutes>
+              } />
 
-            <Route path="/leaves" element={
-              <RoleBaseRoutes requiredRole={["admin", "employee"]}>
-                <Leaves />
-              </RoleBaseRoutes>
-            } />
+              <Route path="/profile" element={
+                <RoleBaseRoutes requiredRole={["admin", "employee"]}>
+                  <Profile />
+                </RoleBaseRoutes>
+              } />
 
-            <Route path="/payroll" element={
-              <RoleBaseRoutes requiredRole={["admin"]}>
-                <Payroll />
-              </RoleBaseRoutes>
-            } />
+              <Route path="/leaves" element={
+                <RoleBaseRoutes requiredRole={["admin", "employee"]}>
+                  <Leaves />
+                </RoleBaseRoutes>
+              } />
 
-            <Route path="/salary" element={
-              <RoleBaseRoutes requiredRole={["admin", "employee"]}>
-                <Salary />
-              </RoleBaseRoutes>
-            } />
+              <Route path="/payroll" element={
+                <RoleBaseRoutes requiredRole={["admin"]}>
+                  <Payroll />
+                </RoleBaseRoutes>
+              } />
 
-            <Route path="/performance" element={
-              <RoleBaseRoutes requiredRole={["admin", "hr"]}>
-                <PerformanceManagement />
-              </RoleBaseRoutes>
-            } />
+              <Route path="/salary" element={
+                <RoleBaseRoutes requiredRole={["admin", "employee"]}>
+                  <Salary />
+                </RoleBaseRoutes>
+              } />
 
-            <Route path="/analytics" element={
-              <RoleBaseRoutes requiredRole={["admin", "hr"]}>
-                <Analytics />
-              </RoleBaseRoutes>
-            } />
+              <Route path="/performance" element={
+                <RoleBaseRoutes requiredRole={["admin", "hr"]}>
+                  <PerformanceManagement />
+                </RoleBaseRoutes>
+              } />
 
-            <Route path="/settings" element={
-              <RoleBaseRoutes requiredRole={["admin", "employee", "hr"]}>
-                <Settings />
-              </RoleBaseRoutes>
-            } />
-          </Routes>
-        </ErrorBoundary>
+              <Route path="/analytics" element={
+                <RoleBaseRoutes requiredRole={["admin", "hr"]}>
+                  <Analytics />
+                </RoleBaseRoutes>
+              } />
+
+              <Route path="/settings" element={
+                <RoleBaseRoutes requiredRole={["admin", "employee", "hr"]}>
+                  <Settings />
+                </RoleBaseRoutes>
+              } />
+            </Routes>
+          </ErrorBoundary>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   )

@@ -8,6 +8,8 @@ import payrollRouter from "./routes/payroll.js";
 import leaveRouter from "./routes/leaveRouter.js";
 import performanceRouter from "./routes/performanceRouter.js";
 import analyticsRouter from "./routes/analyticsRouter.js";
+import notificationRouter from "./routes/notificationRouter.js";
+
 
 const app = express();
 //DB connection
@@ -23,6 +25,8 @@ app.use("/api/payroll", payrollRouter)
 app.use("/api/leave", leaveRouter)
 app.use("/api/performance", performanceRouter)
 app.use("/api/analytics", analyticsRouter)
+app.use("/api/notifications", notificationRouter)
+
 
 
 const port = 3000;

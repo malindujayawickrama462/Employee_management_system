@@ -16,6 +16,7 @@ import { getAllEmployees, addEmployee, updateEmployee, deleteEmployee } from '..
 import { getAllDepartments, addDepartment, deleteDepartment, assignManager, removeManager } from '../utils/departmentApi';
 import { getAllPayrolls } from '../utils/payrollApi';
 import AdminSidebar from '../components/AdminSidebar';
+import Header from '../components/Header';
 
 // Modular components for different dashboard sections
 import DashboardHeader from '../components/DashboardHeader';
@@ -23,6 +24,10 @@ import StatsGrid from '../components/StatsGrid';
 import RecentArrivals from '../components/RecentArrivals';
 import QuickActions from '../components/QuickActions';
 import EmployeeRegistry from '../components/EmployeeRegistry';
+import ActivityPulse from '../components/ActivityPulse';
+import OrgStructureTree from '../components/OrgStructureTree';
+
+
 import DepartmentStructure from '../components/DepartmentStructure';
 import EmployeeModal from '../components/EmployeeModal';
 import DepartmentModal from '../components/DepartmentModal';
@@ -57,8 +62,10 @@ const AdminDashboard = () => {
     // -- Form Buffer States --
     const [employeeForm, setEmployeeForm] = useState({
         employeeID: '', name: '', email: '', password: '',
-        address: '', nic: '', position: '', salary: '', department: ''
+        address: '', nic: '', position: '', salary: '', department: '',
+        dob: '', contractExpiry: ''
     });
+
     const [departmentForm, setDepartmentForm] = useState({ departmentID: '', name: '' });
     const [managerForm, setManagerForm] = useState({ managerID: '' });
 
@@ -223,27 +230,31 @@ const AdminDashboard = () => {
     /**
      * openEditEmployee - Populates the form buffer with existing data for editing.
      */
-    const openEditEmployee = (employee) => {
-        setEditingEmployee(employee);
+    const openEditEmployee = (emp) => {
+        setEditingEmployee(emp);
         setEmployeeForm({
-            employeeID: employee.employeeID || '',
-            name: employee.name || '',
-            email: employee.email || '',
-            password: '',
-            address: employee.address || '',
-            nic: employee.nic || '',
-            position: employee.position || '',
-            salary: employee.salary || '',
-            department: employee.department?._id || ''
+            employeeID: emp.employeeID,
+            name: emp.name,
+            email: emp.email,
+            password: '', // Password is not returned for security
+            address: emp.address || '',
+            nic: emp.nic || '',
+            position: emp.position || '',
+            salary: emp.salary || '',
+            department: emp.department?._id || emp.department || '',
+            dob: emp.dob ? emp.dob.split('T')[0] : '',
+            contractExpiry: emp.contractExpiry ? emp.contractExpiry.split('T')[0] : ''
         });
         setShowEmployeeModal(true);
     };
+
 
     const resetEmployeeForm = () => {
         setEditingEmployee(null);
         setEmployeeForm({
             employeeID: '', name: '', email: '', password: '',
-            address: '', nic: '', position: '', salary: '', department: ''
+            address: '', nic: '', position: '', salary: '', department: '',
+            dob: '', contractExpiry: ''
         });
     };
 
@@ -293,81 +304,92 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-slate-50">
             <AdminSidebar />
+            <div className="flex-1 ml-64 min-h-screen relative flex flex-col">
+                <Header />
 
-            <div className="flex-1 ml-72 p-8 pt-12 animate-fade-in relative">
-                {/* Header Section: Tab Switching & Force Refresh */}
-                <DashboardHeader
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                    loading={loading}
-                    fetchAllData={fetchAllData}
-                />
-
-                {/* Notifications */}
-                {message.text && (
-                    <div className={`mb-8 p-5 rounded-3xl shadow-xl animate-fade-in glass border-l-8 ${message.type === 'success' ? 'border-[var(--accent-success)] text-green-800' : 'border-[var(--accent-danger)] text-red-800'
-                        }`}>
-                        <div className="flex items-center gap-3">
-                            {message.type === 'success' ? <UserCheck className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-                            <span className="font-bold">{message.text}</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Main Dynamic Content Area */}
-                {activeTab === 'overview' && (
-                    <div className="space-y-12">
-                        {/* High-level performance metrics */}
-                        <StatsGrid stats={stats} formatCurrency={formatCurrency} />
-
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                            <div className="lg:col-span-2 space-y-8">
-                                {/* Chronological list of new personnel */}
-                                <RecentArrivals
-                                    employees={employees}
-                                    setActiveTab={setActiveTab}
-                                    formatCurrency={formatCurrency}
-                                />
-                            </div>
-                            <div className="space-y-8">
-                                {/* One-click access to critical forms */}
-                                <QuickActions
-                                    resetEmployeeForm={resetEmployeeForm}
-                                    setShowEmployeeModal={setShowEmployeeModal}
-                                    setShowDepartmentModal={setShowDepartmentModal}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'employees' && (
-                    <EmployeeRegistry
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        filteredEmployees={filteredEmployees}
-                        openEditEmployee={openEditEmployee}
-                        handleDeleteEmployee={handleDeleteEmployee}
-                        formatCurrency={formatCurrency}
-                        setReportEmployeeID={setReportEmployeeID}
+                <main className="flex-1 p-8 animate-fade-in">
+                    <DashboardHeader
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                        loading={loading}
+                        fetchAllData={fetchAllData}
+                        title="Dashboard"
+                        subtitle="System Overview & Personnel Metrics"
                     />
 
-                )}
+                    {/* Notifications */}
+                    {message.text && (
+                        <div className={`mb-8 p-5 rounded-2xl border-l-4 shadow-sm animate-fade-in bg-white ${message.type === 'success' ? 'border-emerald-500 text-emerald-800' : 'border-rose-500 text-rose-800'
+                            }`}>
+                            <div className="flex items-center gap-3">
+                                {message.type === 'success' ? <UserCheck className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                                <span className="font-bold">{message.text}</span>
+                            </div>
+                        </div>
+                    )}
 
-                {activeTab === 'departments' && (
-                    <DepartmentStructure
-                        departments={departments}
-                        employees={employees}
-                        setShowDepartmentModal={setShowDepartmentModal}
-                        handleRemoveManager={handleRemoveManager}
-                        setSelectedDepartment={setSelectedDepartment}
-                        setShowManagerModal={setShowManagerModal}
-                        handleDeleteDepartment={handleDeleteDepartment}
-                    />
-                )}
+                    {/* Main Dynamic Content Area */}
+                    {activeTab === 'overview' && (
+                        <div className="space-y-10">
+                            <StatsGrid stats={stats} formatCurrency={formatCurrency} />
+
+                            <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                                <div className="xl:col-span-1 space-y-8">
+                                    <QuickActions
+                                        resetEmployeeForm={resetEmployeeForm}
+                                        setShowEmployeeModal={setShowEmployeeModal}
+                                        setShowDepartmentModal={setShowDepartmentModal}
+                                    />
+                                    <ActivityPulse activities={payrolls} />
+                                </div>
+                                <div className="xl:col-span-3">
+                                    <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+                                        <RecentArrivals
+                                            employees={employees}
+                                            setActiveTab={setActiveTab}
+                                            formatCurrency={formatCurrency}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'employees' && (
+                        <EmployeeRegistry
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            filteredEmployees={filteredEmployees}
+                            openEditEmployee={openEditEmployee}
+                            handleDeleteEmployee={handleDeleteEmployee}
+                            formatCurrency={formatCurrency}
+                            setReportEmployeeID={setReportEmployeeID}
+                        />
+                    )}
+
+                    {activeTab === 'departments' && (
+                        <div className="space-y-10">
+                            <DepartmentStructure
+                                departments={departments}
+                                employees={employees}
+                                setShowDepartmentModal={setShowDepartmentModal}
+                                handleRemoveManager={handleRemoveManager}
+                                setSelectedDepartment={setSelectedDepartment}
+                                setShowManagerModal={setShowManagerModal}
+                                handleDeleteDepartment={handleDeleteDepartment}
+                            />
+                            <OrgStructureTree
+                                departments={departments}
+                                employees={employees}
+                            />
+                        </div>
+                    )}
+
+                </main>
             </div>
+
 
             {/* Modal Layers - Rendered outside main flow to avoid z-index conflicts */}
 

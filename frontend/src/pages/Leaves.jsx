@@ -19,20 +19,20 @@ const Leaves = () => {
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin';
 
+    // Note: We don't add ml-72 here because the child components (Leave/LeaveManagement) 
+    // already handle their own layout and sidebar spacing.
     return (
-        <div className="flex min-h-screen">
-            {/* Sidebar selection based on administrative status */}
-            {isAdmin ? <AdminSidebar /> : <Sidebar />}
-
-            <div className="flex-1 flex flex-col">
-                {/* Global header is only shown for non-admin views for consistency */}
-                {!isAdmin && <Header />}
-
-                <main className={`flex-1 ml-72 transition-all duration-500`}>
-                    {/* View delegation based on user role */}
-                    {isAdmin ? <LeaveManagement /> : <Leave />}
-                </main>
-            </div>
+        <div className="flex min-h-screen bg-slate-50">
+            {/* View delegation based on user role */}
+            {isAdmin ? (
+                <div className="flex-1">
+                    <LeaveManagement />
+                </div>
+            ) : (
+                <div className="flex-1 flex flex-col">
+                    <Leave />
+                </div>
+            )}
         </div>
     );
 };
