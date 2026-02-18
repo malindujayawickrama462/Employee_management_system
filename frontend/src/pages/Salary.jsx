@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
 import { getEmployeePayrolls, downloadPayslip } from '../utils/payrollApi';
-import { DollarSign, Download, Calendar, TrendingUp, Wallet, BarChart3, ArrowUpRight, ChevronRight, RefreshCw, PoundSign } from 'lucide-react';
+import { DollarSign, Download, Calendar, TrendingUp, Wallet, BarChart3, ArrowUpRight, ChevronRight, RefreshCw } from 'lucide-react';
 
 const Salary = () => {
     const { user } = useAuth();

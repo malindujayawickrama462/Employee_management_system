@@ -66,6 +66,18 @@ function App() {
                 </RoleBaseRoutes>
               } />
 
+              <Route path="/employees" element={
+                <RoleBaseRoutes requiredRole={["admin"]}>
+                  <AdminDashboard />
+                </RoleBaseRoutes>
+              } />
+
+              <Route path="/departments" element={
+                <RoleBaseRoutes requiredRole={["admin"]}>
+                  <AdminDashboard />
+                </RoleBaseRoutes>
+              } />
+
               <Route path="/employee-dashboard" element={
                 <RoleBaseRoutes requiredRole={["admin", "employee"]}>
                   <EmployeeDashboard />

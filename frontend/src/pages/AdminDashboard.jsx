@@ -10,7 +10,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { UserCheck, AlertCircle } from 'lucide-react';
 import { getAllEmployees, addEmployee, updateEmployee, deleteEmployee } from '../utils/employeeApi';
 import { getAllDepartments, addDepartment, deleteDepartment, assignManager, removeManager } from '../utils/departmentApi';
@@ -39,7 +39,22 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
 
     // -- Component State --
-    const [activeTab, setActiveTab] = useState('overview'); // Controls visible content section
+    const location = useLocation();
+    const [activeTab, setActiveTabState] = useState('overview'); // Controls visible content section
+
+    // Sync activeTab with URL path
+    useEffect(() => {
+        if (location.pathname === '/employees') setActiveTabState('employees');
+        else if (location.pathname === '/departments') setActiveTabState('departments');
+        else if (location.pathname === '/admin-dashboard') setActiveTabState('overview');
+    }, [location.pathname]);
+
+    // Custom setActiveTab that handles navigation
+    const setActiveTab = (tab) => {
+        if (tab === 'overview') navigate('/admin-dashboard');
+        else navigate(`/${tab}`);
+    };
+
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showDepartmentModal, setShowDepartmentModal] = useState(false);
     const [showManagerModal, setShowManagerModal] = useState(false);
