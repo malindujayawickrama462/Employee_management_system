@@ -56,6 +56,13 @@ export async function deleteDepartment(req, res) {
         if (!department) {
             return res.status(404).json({ success: false, error: "department not found" });
         }
+
+        // Cleanup: Set department to null for all employees in this department
+        await Employee.updateMany(
+            { department: department._id },
+            { $set: { department: null } }
+        );
+
         await department.deleteOne();
         res.status(200).json({ success: true, department });
     } catch (err) {
@@ -125,10 +132,18 @@ export async function removeManager(req, res) {
             })
         } else {
             // Logic: Find the employee who was the manager and demote them
-            // Note: In a production app, you'd check if they are a manager of any OTHER dept first
-            const employee = await Employee.findOne({ employeeID: department.manager?.employeeID });
-            if (employee) {
-                await User.findOneAndUpdate({ email: employee.email }, { role: 'employee' });
+            const OldManagerID = department.manager?._id;
+            const OldManagerEmail = department.manager?.email;
+
+            department.manager = null;
+            await department.save();
+
+            if (OldManagerID) {
+                // Only demote if they aren't managing anything else
+                const otherDepts = await Department.find({ manager: OldManagerID });
+                if (otherDepts.length === 0) {
+                    await User.findOneAndUpdate({ email: OldManagerEmail }, { role: 'employee' });
+                }
             }
 
             res.status(201).json({
@@ -184,7 +199,7 @@ export async function addEmployeeToDepartment(req, res) {
 
 export async function getEmployeesByDepartment(req, res) {
     try {
-        const { departmentID } = req.body;
+        const { departmentID } = req.query; // Changed from req.body to req.query to match frontend GET requests
         const department = await Department.findOne({ departmentID })
             .populate("manager", "employeeID name position")
             .populate("employees", "employeeID name position salary");

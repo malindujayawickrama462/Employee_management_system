@@ -116,6 +116,10 @@ export async function UpdateEmployee(req, res) {
 
         // Update User account if email changed
         if (req.body.email && oldEmployee.email !== req.body.email) {
+            const emailExists = await User.findOne({ email: req.body.email });
+            if (emailExists) {
+                return res.status(400).json({ msg: "Email already in use by another user" });
+            }
             await User.findOneAndUpdate(
                 { email: oldEmployee.email },
                 { email: req.body.email, name: req.body.name || oldEmployee.name }
